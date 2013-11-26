@@ -9,6 +9,35 @@
 */
 
 /**
+ * Enqueues Membership scripts to WordPress Dashboard
+ *
+ * @since 1.0.0
+ *
+ * @param string $hook_suffix WordPress passed variable
+ * @return void
+*/
+function it_exchange_manual_purchases_addon_admin_wp_enqueue_scripts( $hook_suffix ) {
+	if ( !empty( $_GET ) && !empty( $_GET['page'] ) && 'it-exchange-add-manual-purchase' === $_GET['page'] ) {
+		wp_enqueue_script( 'it-exchange-manual-purchases-addon-add-manual-purchase', ITUtility::get_url_from_file( dirname( __FILE__ ) ) . '/js/add-manual-purchase.js', array( 'jquery-select-to-autocomplete' ) );
+	}
+}
+add_action( 'admin_enqueue_scripts', 'it_exchange_manual_purchases_addon_admin_wp_enqueue_scripts' );
+
+/**
+ * Enqueues Membership styles to WordPress Dashboard
+ *
+ * @since 1.0.0
+ *
+ * @return void
+*/
+function it_exchange_manual_purchases_addon_admin_wp_enqueue_styles() {
+	if ( isset( $_GET ) && !empty( $_GET['page'] )  && 'it-exchange-add-manual-purchase' !== $_GET['page'] ) {
+		wp_enqueue_style( 'it-exchange-manual-purchases-addon-add-manual-purchase', ITUtility::get_url_from_file( dirname( __FILE__ ) ) . '/styles/add-manual-purchase.css' );
+	}
+}
+add_action( 'admin_print_styles', 'it_exchange_manual_purchases_addon_admin_wp_enqueue_styles' );
+
+/**
  * Redirects admin users away from core add post type screens for payments to our custom one.
  *
  * @since 1.0.0
@@ -56,7 +85,7 @@ add_filter( 'it_exchange_admin_pages', 'it_exchange_manual_purchases_register_ex
 function it_exchange_manual_purchases_add_menu_item() {
 	if ( ! empty( $_GET['page'] ) && 'it-exchange-add-manual-purchase' == $_GET['page'] ) {
 		$slug = 'it-exchange-add-manual-purchase';
-		$func = 'it_exchange_manual_purchases_print_add_purchase_screen';
+		$func = 'it_exchange_manual_purchase_print_add_payment_screen';
 		add_submenu_page( 'it-exchange', __( 'Add Manual Purchase', 'LION' ), __( 'Add Manual Purchase', 'LION' ), 'update_plugins', $slug, $func );
 	}
 }
@@ -82,39 +111,3 @@ function it_exchange_manual_purchases_remove_submenu_links() {
 	}
 }
 add_action( 'admin_head', 'it_exchange_manual_purchases_remove_submenu_links' );
-
-function it_exchange_manual_purchases_print_add_purchase_screen() {
-	// Setup add / edit variables
-	$form_action = add_query_arg( array( 'page' => 'it-exchange-add-manual-purchase' ), get_admin_url() . 'admin.php' );
-
-	$errors = it_exchange_get_messages( 'error' );
-	if ( ! empty( $errors ) ) {
-		foreach( $errors as $error ) {
-			ITUtility::show_error_message( $error );
-		}
-	} else if ( ! empty( $_GET['added'] ) ) {
-		ITUtility::show_status_message( __( 'Purchase Added', 'LION' ) );
-	}
-
-	$form_values  = empty( $values ) ? ITForm::get_post_data() : $values;
-	$form_values  = ! empty( $errors ) ? ITForm::get_post_data() : $form_values;
-	$form         = new ITForm( $form_values, array( 'prefix' => 'it-exchange-manual-purchase' ) );
-	$form_options = array(
-		'id'      => apply_filters( 'it-exchange-manual-purchase_form_id', 'it-exchange-manual-purchase' ),
-		'enctype' => apply_filters( 'it-exchange-manual-purchase_enctype', false ),
-		'action'  => $form_action,
-	);
-	?>
-	<div class="wrap">
-		<?php
-		screen_icon( 'it-exchange-payments' );
-		echo '<h2>' . __( 'Add Manual Purchase', 'LION' ) . '</h2>';
-		$form->start_form( $form_options, 'it-exchange-manual-purchase-add-edit-coupon' );
-		?>
-		<h1>This is where the magic happens... p.s. I hate you glenn</h1>
-		<?php
-		$form->end_form();
-		?>
-	</div>
-	<?php
-}
