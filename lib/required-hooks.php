@@ -111,3 +111,18 @@ function it_exchange_manual_purchases_remove_submenu_links() {
 	}
 }
 add_action( 'admin_head', 'it_exchange_manual_purchases_remove_submenu_links' );
+
+/**
+ * Returns a boolean. Is this transaction a status that warrants delivery of any products attached to it?
+ *
+ * @since 1.0.0
+ *
+ * @param boolean $cleared passed in through WP filter. Ignored here.
+ * @param object $transaction
+ * @return boolean
+*/
+function it_exchange_manual_purchases_transaction_is_cleared_for_delivery( $cleared, $transaction ) {
+	$valid_stati = array( 'Completed' );
+	return in_array( it_exchange_get_transaction_status( $transaction ), $valid_stati );
+}
+add_filter( 'it_exchange_manual-purchases_transaction_is_cleared_for_delivery', 'it_exchange_manual_purchases_transaction_is_cleared_for_delivery', 10, 2 );

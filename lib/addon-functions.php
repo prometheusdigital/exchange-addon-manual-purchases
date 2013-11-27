@@ -215,7 +215,7 @@ function it_exchange_manual_purchase_print_add_payment_screen() {
 function it_exchange_manual_purchases_addon_process_transaction( $customer_id, $transaction_object ) {
 	$uniqid = it_exchange_manual_purchases_addon_transaction_uniqid();
 	
-	return it_exchange_add_transaction( 'manual-purchase', $uniqid, 'Completed', $customer_id, $transaction_object );
+	return it_exchange_add_transaction( 'manual-purchases', $uniqid, 'Completed', $customer_id, $transaction_object );
 }
 
 function it_exchange_manual_purchases_addon_transaction_uniqid() {
