@@ -8,33 +8,35 @@ function it_exchange_manual_purchase_print_add_payment_screen() {
 		'firstname'   => '',
 		'lastname'    => '',
 		'product_ids' => array(),
+		'total'       => '',
 	);
 
 	if ( !empty( $_POST ) ) {
-		$default = array(
+		$post = array(
 			'userid'      => empty( $_POST['userid'] )      ? ''      : $_POST['userid'],
 			'username'    => empty( $_POST['username'] )    ? ''      : $_POST['username'],
 			'email'       => empty( $_POST['email'] )       ? ''      : $_POST['email'],
 			'firstname'   => empty( $_POST['firstname'] )   ? ''      : $_POST['firstname'],
 			'lastname'    => empty( $_POST['lastname'] )    ? ''      : $_POST['lastname'],
 			'product_ids' => empty( $_POST['product_ids'] ) ? array() : $_POST['product_ids'],
+			'total'       => empty( $_POST['total'] )       ? ''      : $_POST['total'],
 		);
 	
 		if ( check_admin_referer( 'it-exchange-manual-purchase' ) ) {
 		
-			if ( !empty( $default['product_ids'] ) ) {
-				if ( !empty( $default['userid'] ) || ( !empty( $default['username'] ) && !empty( $default['email'] ) ) ) {
-					if ( empty( $default['userid'] ) ) {
+			if ( !empty( $post['product_ids'] ) ) {
+				if ( !empty( $post['userid'] ) || ( !empty( $post['username'] ) && !empty( $post['email'] ) ) ) {
+					if ( empty( $post['userid'] ) ) {
 						$args = array(
-							'user_login' => $default['username'],
-							'user_email' => $default['email'],
+							'user_login' => $post['username'],
+							'user_email' => $post['email'],
 							'user_pass'  => wp_generate_password(),
-							'first_name' => $firstname,
-							'last_name'  => $lastname,
+							'first_name' => $post['firstname'],
+							'last_name'  => $post['lastname'],
 						);
 						$user_id = wp_insert_user( $args );
 					} else {
-						$user_id = $default['userid'];
+						$user_id = $post['userid'];
 					}
 						
 					if ( !is_wp_error( $user_id ) ) {
@@ -47,7 +49,7 @@ function it_exchange_manual_purchase_print_add_payment_screen() {
 							$currency = $settings['default-currency'];
 							$description = array();
 	
-							foreach ( $default['product_ids'] as $product_id ) {
+							foreach ( $post['product_ids'] as $product_id ) {
 								if ( ! $product = it_exchange_get_product( $product_id ) ) {
 									$error_message = sprintf( __( 'No Product Found - Product ID: %s', 'LION' ), $product_id );
 									continue;
@@ -69,7 +71,7 @@ function it_exchange_manual_purchase_print_add_payment_screen() {
 								$description = apply_filters( 'it_exchange_get_cart_description', join( ', ', $description ), $description );
 
 								// Package it up and send it to the transaction method add-on
-								$total = empty( $_POST['total'] ) ? 0 : it_exchange_convert_to_database_number( $_POST['total'] );
+								$total = empty( $post['total'] ) ? 0 : it_exchange_convert_to_database_number( $post['total'] );
 								$transaction_object = new stdClass();
 								$transaction_object->total                  = number_format( it_exchange_convert_from_database_number( $total ), 2, '.', '' );
 								$transaction_object->currency               = $currency;
@@ -116,8 +118,11 @@ function it_exchange_manual_purchase_print_add_payment_screen() {
 		
 		if ( ! empty ( $status_message ) )
 			ITUtility::show_status_message( $status_message );
-		if ( ! empty( $error_message ) )
-			ITUtility::show_error_message( $error_message );	
+			
+		if ( ! empty( $error_message ) ) {
+			ITUtility::show_error_message( $error_message );
+			$default = wp_parse_args( $post, $default );
+		}	
 	}
 	?>
 	<div class="wrap">
@@ -184,7 +189,7 @@ function it_exchange_manual_purchase_print_add_payment_screen() {
 					echo '</p>';
 				}
 				?>
-				<label for="it-exchange-add-manual-purchase-total-paid"><?Php _e( 'Total Paid', 'LION' ); ?></label><input id="it-exchange-add-manual-purchase-total-paid" type="text" value="" name="total" />
+				<label for="it-exchange-add-manual-purchase-total-paid"><?Php _e( 'Total Paid', 'LION' ); ?></label><input id="it-exchange-add-manual-purchase-total-paid" type="text" value="<?php echo $default['total']; ?>" name="total" />
 				<div class="field">
 					<?php
 					submit_button( 'Cancel', 'large', 'cancel' );
