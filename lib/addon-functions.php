@@ -2,7 +2,7 @@
 
 function it_exchange_manual_purchase_print_add_payment_screen() {
 	$default = array(
-		'userid'      => '',
+		'userid'      => empty( $_GET['userid'] ) ? '' : $_GET['userid'],
 		'username'    => '',
 		'email'       => '',
 		'firstname'   => '',
@@ -147,7 +147,7 @@ function it_exchange_manual_purchase_print_add_payment_screen() {
 						echo '<option value></option>';
 						foreach( $users as $user ) {
 							$user->ID = (int) $user->ID;
-							$selected = selected( $userid, $user->ID, false );
+							$selected = selected( $default['userid'], $user->ID, false );
 							echo '<option value="' . $user->ID . '" ' . $selected . '>' . esc_html( $user->user_login ) . '</option>';
 						}
 						echo '</select>';
