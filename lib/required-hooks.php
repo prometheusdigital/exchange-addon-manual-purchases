@@ -9,6 +9,28 @@
 */
 
 /**
+ * Adds iThemes Exchange User row action to users.php row actions
+ *
+ * @since 1.0.0
+ * @return void
+*/
+function it_exchange_manual_purchases_addon_user_row_actions( $actions, $user_object ) {
+	add_thickbox();
+	$args = array(
+		'action'      => 'it-exchange-add-manual-purchase-for-user',
+		'userid'    => $user_object->ID,
+		'TB_iframe' => 'true',
+		'width'     => '800',
+		'height'    => '600',
+	);
+	$url = add_query_arg( $args, get_admin_url() . 'admin-ajax.php' ); 
+	$actions['it_exchange_manual_purchase'] = '<a href="' . $url . '" class="thickbox it-exchange-add-manual-purchase-for-user">' . __( 'Add Product', 'LION' ) . '</a>';
+
+	return $actions;
+}
+add_filter( 'user_row_actions', 'it_exchange_manual_purchases_addon_user_row_actions', 10, 2 );
+
+/**
  * Enqueues Membership scripts to WordPress Dashboard
  *
  * @since 1.0.0
@@ -17,7 +39,8 @@
  * @return void
 */
 function it_exchange_manual_purchases_addon_admin_wp_enqueue_scripts( $hook_suffix ) {
-	if ( !empty( $_GET ) && !empty( $_GET['page'] ) && 'it-exchange-add-manual-purchase' === $_GET['page'] ) {
+	if ( ( !empty( $_GET ) && !empty( $_GET['page'] ) && 'it-exchange-add-manual-purchase' === $_GET['page'] ) 
+		|| 'users.php' == $hook_suffix ) {
 		wp_enqueue_script( 'it-exchange-manual-purchases-addon-add-manual-purchase', ITUtility::get_url_from_file( dirname( __FILE__ ) ) . '/js/add-manual-purchase.js', array( 'jquery-select-to-autocomplete' ) );
 	}
 }

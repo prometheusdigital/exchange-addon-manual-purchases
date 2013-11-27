@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * Displays the Manual Purchases - Add Payment screen
+ *
+ * @since 1.0.0
+ * @todo switch out wp_insert_user with it_exchange_create_customer
+*/
 function it_exchange_manual_purchase_print_add_payment_screen() {
 	$default = array(
 		'userid'      => empty( $_GET['userid'] ) ? '' : $_GET['userid'],
@@ -218,6 +224,14 @@ function it_exchange_manual_purchases_addon_process_transaction( $customer_id, $
 	return it_exchange_add_transaction( 'manual-purchases', $uniqid, 'Completed', $customer_id, $transaction_object );
 }
 
+/**
+ * This proccesses a Manual Purchase transaction.
+ *
+ * @since 1.0.0
+ *
+ * @param string $status passed by WP filter.
+ * @param object $transaction_object The transaction object
+*/
 function it_exchange_manual_purchases_addon_transaction_uniqid() {
 	$uniqid = uniqid( '', true );
 
