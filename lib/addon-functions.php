@@ -57,21 +57,23 @@ function it_exchange_manual_purchase_print_add_payment_screen() {
 							$description = array();
 	
 							foreach ( $post['product_ids'] as $product_id ) {
-								if ( ! $product = it_exchange_get_product( $product_id ) ) {
-									$error_message = sprintf( __( 'No Product Found - Product ID: %s', 'LION' ), $product_id );
-									continue;
-								}
+								if ( !empty( $product_id ) ) {
+									if ( ! $product = it_exchange_get_product( $product_id ) ) {
+										$error_message = sprintf( __( 'No Product Found - Product ID: %s', 'LION' ), $product_id );
+										continue;
+									}
+										
+									$itemized_data = apply_filters( 'it_exchange_add_itemized_data_to_cart_product', array(), $product_id );
+									if ( ! is_serialized( $itemized_data ) )
+										$itemized_data = maybe_serialize( $itemized_data );
+									$key = $product_id . '-' . md5( $itemized_data );
 									
-								$itemized_data = apply_filters( 'it_exchange_add_itemized_data_to_cart_product', array(), $product_id );
-								if ( ! is_serialized( $itemized_data ) )
-									$itemized_data = maybe_serialize( $itemized_data );
-								$key = md5( $itemized_data );
-								
-								$products[$key]['product_base_price'] = it_exchange_get_product_feature( $product_id, 'base-price' );
-								$products[$key]['product_subtotal'] = $products[$key]['product_base_price']; //need to add count
-								$products[$key]['product_name'] = get_the_title( $product_id );
-								$products[$key]['product_id'] = $product_id;
-								$description[] = $products[$key]['product_name'];
+									$products[$key]['product_base_price'] = it_exchange_get_product_feature( $product_id, 'base-price' );
+									$products[$key]['product_subtotal'] = $products[$key]['product_base_price']; //need to add count
+									$products[$key]['product_name'] = get_the_title( $product_id );
+									$products[$key]['product_id'] = $product_id;
+									$description[] = $products[$key]['product_name'];
+								}
 							}
 							
 							if ( empty( $error_message ) ) {
@@ -197,13 +199,45 @@ function it_exchange_manual_purchase_print_add_payment_screen() {
 				$products = it_exchange_get_products( $args );
 				
 				foreach( $products as $product ) {
-					$checked = checked( in_array( $product->ID, $default['product_ids'] ), true, false );
-					echo '<p>';
-					echo '<input id="it-exchange-add-purchase-product-' . $product->ID . '" class="it-exchange-add-pruchase-product" type="checkbox" value="' . $product->ID . '" name="product_ids[]" ' . $checked . '/>';
-					echo '<label for="it-exchange-add-purchase-product-' . $product->ID . '" >' . $product->post_title . '</label>';
-					echo '</p>';
+					$img_output = '';
+										
+					if ( it_exchange_product_supports_feature( $product->ID, 'product-images' )
+							&& it_exchange_product_has_feature( $product->ID, 'product-images' ) ) {
+			
+						$product_images = it_exchange_get_product_feature( $product->ID, 'product-images' );
+						$img_src = wp_get_attachment_thumb_url( $product_images[0] );
+			
+						ob_start();
+						?>
+						<div class="it-exchange-feature-image-<?php echo $product->ID; ?> it-exchange-featured-image">
+							<img alt="" src="<?php echo $img_src ?>" />
+						</div>
+						<?php
+						$img_output = ob_get_clean();
+			
+					}
+					/*
+					<li data-toggle="digital-downloads-product-type-wizard" product-type="digital-downloads-product-type" class="product-option digital-downloads-product-type-product-option selected">
+						<div class="option-spacer">
+							<img alt="Digital Downloads" src="http://lew.internal.ithemes.com/wp-content/plugins/ithemes-exchange/core-addons/product-types/digital-downloads/images/wizard-downloads.png">
+							<span class="product-name">Digital Downloads</span>
+						</div>
+						<input type="hidden" value="digital-downloads-product-type" name="it-exchange-product-types[]" class="enable-digital-downloads-product-type">
+					</li>
+					*/
+					if ( in_array( $product->ID, $default['product_ids'] ) )
+						$value = $product->ID;
+					else
+						$value = '';
+					
+					echo '<div class="it-exchange-add-purchase-product" data-product-id="' . $product->ID . '">';
+					echo $img_output;
+					echo '<span class="product-name">' . $product->post_title . '</span>';
+					echo '<input id="it-exchange-add-purchase-product-' . $product->ID . '" type="hidden" value="' . $value . '" name="product_ids[]" />';
+					echo '</div>';
 				}
 				?>
+				<div class="clear"></div>
 				<label for="it-exchange-add-manual-purchase-total-paid"><?Php _e( 'Total Paid', 'LION' ); ?></label><input id="it-exchange-add-manual-purchase-total-paid" type="text" value="<?php echo $default['total']; ?>" name="total" />
 				<div class="field">
 					<?php

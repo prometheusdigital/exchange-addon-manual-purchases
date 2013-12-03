@@ -1,0 +1,32 @@
+.it-exchange-add-purchase-product {
+	border: 1px solid #D6D6D6;
+	width: 150px;
+	height: 175px;
+	display: block;
+	float: left;
+	margin-left: 10px;
+	position: relative;
+	cursor: pointer;
+}
+
+.it-exchange-add-purchase-product-selected {
+    border-color: #8EC602;
+    box-shadow: 0 0 0 2px #8EC602;
+}
+
+.it-exchange-add-purchase-product .it-exchange-featured-image {
+	display: block;
+	width: 150px;
+	height: 150px;
+}
+
+.it-exchange-add-purchase-product .product-name {
+	display: block;
+	width: 150px;
+	height: 25px;
+	text-align: center;
+	overflow: hidden;
+	background: #d0d0d0;
+	bottom: 0px;
+	position: absolute;
+}

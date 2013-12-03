@@ -82,7 +82,8 @@ add_action( 'admin_enqueue_scripts', 'it_exchange_manual_purchases_addon_admin_w
 */
 function it_exchange_manual_purchases_addon_admin_wp_enqueue_styles() {	
 	global $hook_suffix;
-	if ( isset( $_GET ) && !empty( $_GET['page'] )  && 'it-exchange-add-manual-purchase' !== $_GET['page'] ) {
+	if ( ( !empty( $_GET ) && !empty( $_GET['page'] ) && 'it-exchange-add-manual-purchase' === $_GET['page'] ) 
+		|| 'users.php' == $hook_suffix ) {
 		wp_enqueue_style( 'it-exchange-manual-purchases-addon-add-manual-purchase', ITUtility::get_url_from_file( dirname( __FILE__ ) ) . '/styles/add-manual-purchase.css' );
 	} else if ( 'user.php-ithemes-manual-purchase-thickbox' === $hook_suffix ) {
 		wp_enqueue_style( 'it-exchange-manual-purchases-addon-add-manual-purchase', ITUtility::get_url_from_file( dirname( __FILE__ ) ) . '/styles/add-manual-purchase.css' );
