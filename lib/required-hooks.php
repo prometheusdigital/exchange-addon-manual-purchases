@@ -17,18 +17,38 @@
 function it_exchange_manual_purchases_addon_user_row_actions( $actions, $user_object ) {
 	add_thickbox();
 	$args = array(
-		'action'      => 'it-exchange-add-manual-purchase-for-user',
+		'action'    => 'it-exchange-add-manual-purchase-for-user',
 		'userid'    => $user_object->ID,
 		'TB_iframe' => 'true',
 		'width'     => '800',
 		'height'    => '600',
 	);
 	$url = add_query_arg( $args, get_admin_url() . 'admin-ajax.php' ); 
-	$actions['it_exchange_manual_purchase'] = '<a href="' . $url . '" class="thickbox it-exchange-add-manual-purchase-for-user">' . __( 'Add Product', 'LION' ) . '</a>';
+	$actions['it_exchange_manual_purchase'] = '<a href="' . $url . '" class="thickbox it-exchange-add-manual-purchase-for-user">' . __( 'Add Product(s)', 'LION' ) . '</a>';
 
 	return $actions;
 }
 add_filter( 'user_row_actions', 'it_exchange_manual_purchases_addon_user_row_actions', 10, 2 );
+
+function it_exchange_manual_purchases_admin_user_products() {
+	$userid = empty( $_GET['user_id'] ) ? '' : $_GET['user_id'];
+	
+	if ( !empty( $userid ) ) {
+		add_thickbox();
+		$args = array(
+			'action'    => 'it-exchange-add-manual-purchase-for-user',
+			'userid'    => $userid,
+			'TB_iframe' => 'true',
+			'width'     => '800',
+			'height'    => '600',
+		);
+		$url = add_query_arg( $args, get_admin_url() . 'admin-ajax.php' ); 
+		$output = '<a href="' . $url . '" class="button button-primary button-large thickbox it-exchange-add-manual-purchase-for-user">' . __( 'Add Product(s)', 'LION' ) . '</a>';
+	
+		echo $output;
+	}
+}
+add_action( 'it-exchange-after-admin-user-products', 'it_exchange_manual_purchases_admin_user_products' );
 
 /**
  * Enqueues Membership scripts to WordPress Dashboard
@@ -42,6 +62,8 @@ function it_exchange_manual_purchases_addon_admin_wp_enqueue_scripts( $hook_suff
 	if ( ( !empty( $_GET ) && !empty( $_GET['page'] ) && 'it-exchange-add-manual-purchase' === $_GET['page'] ) 
 		|| 'users.php' == $hook_suffix ) {
 		wp_enqueue_script( 'it-exchange-manual-purchases-addon-add-manual-purchase', ITUtility::get_url_from_file( dirname( __FILE__ ) ) . '/js/add-manual-purchase.js', array( 'jquery-select-to-autocomplete' ) );
+	} else if ( 'user.php-ithemes-manual-purchase-thickbox' === $hook_suffix ) {
+		wp_enqueue_script( 'it-exchange-manual-purchases-addon-add-manual-purchase', ITUtility::get_url_from_file( dirname( __FILE__ ) ) . '/js/add-manual-purchase.js', array( 'jquery-select-to-autocomplete' ) );
 	}
 }
 add_action( 'admin_enqueue_scripts', 'it_exchange_manual_purchases_addon_admin_wp_enqueue_scripts' );
@@ -53,8 +75,11 @@ add_action( 'admin_enqueue_scripts', 'it_exchange_manual_purchases_addon_admin_w
  *
  * @return void
 */
-function it_exchange_manual_purchases_addon_admin_wp_enqueue_styles() {
+function it_exchange_manual_purchases_addon_admin_wp_enqueue_styles() {	
+	global $hook_suffix;
 	if ( isset( $_GET ) && !empty( $_GET['page'] )  && 'it-exchange-add-manual-purchase' !== $_GET['page'] ) {
+		wp_enqueue_style( 'it-exchange-manual-purchases-addon-add-manual-purchase', ITUtility::get_url_from_file( dirname( __FILE__ ) ) . '/styles/add-manual-purchase.css' );
+	} else if ( 'user.php-ithemes-manual-purchase-thickbox' === $hook_suffix ) {
 		wp_enqueue_style( 'it-exchange-manual-purchases-addon-add-manual-purchase', ITUtility::get_url_from_file( dirname( __FILE__ ) ) . '/styles/add-manual-purchase.css' );
 	}
 }
@@ -149,3 +174,14 @@ function it_exchange_manual_purchases_transaction_is_cleared_for_delivery( $clea
 	return in_array( it_exchange_get_transaction_status( $transaction ), $valid_stati );
 }
 add_filter( 'it_exchange_manual-purchases_transaction_is_cleared_for_delivery', 'it_exchange_manual_purchases_transaction_is_cleared_for_delivery', 10, 2 );
+
+function it_exchange_manual_purchases_request() {
+	if ( empty( $_POST['it-exchange-manual-purchase-add-payment-nonce'] ) )
+		return;
+	
+	if ( !empty( $_POST['cancel'] ) ) {
+		wp_safe_redirect( add_query_arg( array( 'post_type' => 'it_exchange_tran' ), 'edit.php' ) );
+		die();
+	}
+}
+add_action( 'admin_init', 'it_exchange_manual_purchases_request' );

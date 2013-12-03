@@ -41,13 +41,21 @@ add_action( 'wp_ajax_it-exchange-manual-purchases-format-price', 'it_exchange_ma
  *
  * @since 1.0.0
 */
-function it_exchange_manual_purchase_for_user_print_add_products_screen() {
+function it_exchange_manual_purchase_for_user_print_add_products_screen() {	
+	global $title, $hook_suffix, $current_screen, $wp_locale, $pagenow, $wp_version,
+	$update_title, $total_update_count, $parent_file, $current_screen;
+	
+	// Catch plugins that include admin-header.php before admin.php completes.
+	if ( empty( $current_screen ) )
+		set_current_screen();
+		
+	$error_message = '';
 	$default = array(
 		'userid'      => empty( $_GET['userid'] ) ? '' : $_GET['userid'],
 		'product_ids' => array(),
 		'total'       => '',
 	);
-
+	
 	if ( !empty( $_POST ) ) {
 		$post = array(
 			'userid'      => empty( $_POST['userid'] )      ? ''      : $_POST['userid'],
@@ -55,7 +63,7 @@ function it_exchange_manual_purchase_for_user_print_add_products_screen() {
 			'total'       => empty( $_POST['total'] )       ? ''      : $_POST['total'],
 		);
 	
-		if ( check_admin_referer( 'it-exchange-manual-purchase' ) ) {
+		if ( check_admin_referer( 'it-exchange-manual-purchase-add-payment', 'it-exchange-manual-purchase-add-payment-nonce' ) ) {
 		
 			if ( !empty( $post['product_ids'] ) ) {
 				if ( !empty( $post['userid'] ) ) {
@@ -114,7 +122,7 @@ function it_exchange_manual_purchase_for_user_print_add_products_screen() {
 								$payment_id = it_exchange_manual_purchases_addon_process_transaction( $user_id, $transaction_object );
 
 								$url = add_query_arg( array( 'action' => 'edit', 'post' => $payment_id ), admin_url( 'post.php' ) );
-								$status_message = sprintf( __( 'Successfully added Manual Purchase. <a href="%s">View Transaction</a>', 'LION' ), $url );
+								$status_message = sprintf( __( 'Successfully added Manual Purchase. <a href="%s" target="_top">View Transaction</a>', 'LION' ), $url );
 							}
 						} else {
 							$error_message = __( 'No user found.', 'LION' );
@@ -142,43 +150,118 @@ function it_exchange_manual_purchase_for_user_print_add_products_screen() {
 			$default = wp_parse_args( $post, $default );
 		}	
 	}
+	
+	wp_user_settings();
+	@header('Content-Type: ' . get_option('html_type') . '; charset=' . get_option('blog_charset'));
+	_wp_admin_html_begin();
 	?>
-	<div class="wrap">
-		<?php
-		screen_icon( 'it-exchange-manual-purchases' );
-		?>
-		<h2><?php _e( 'Add Manual Purchase', 'LION' ); ?></h2>
-		<form id="manual-purchase-add-payment" name="manual-purchase-add-payment" method="post">
-		<div class="it-exchange-add-manual-purchase">
-			<input id="it-exchange-manual-purchase-existing-userid" type="hidden" value="<?php echo $default['userid']; ?>" name="userid" />
-			<div class="it-exchange-add-manual-purchase-product-options">
-				<h3><?php _e( 'Select Products', 'LION' ); ?></h3>
-				<?php
-				$args = array(
-					'product_type' => !empty( $_GET['product_type'] ) ? $_GET['product_type'] : '',
-				);
-				$products = it_exchange_get_products( $args );
-				
-				foreach( $products as $product ) {
-					$checked = checked( in_array( $product->ID, $default['product_ids'] ), true, false );
-					echo '<p>';
-					echo '<input id="it-exchange-add-purchase-product-' . $product->ID . '" class="it-exchange-add-pruchase-product" type="checkbox" value="' . $product->ID . '" name="product_ids[]" ' . $checked . '/>';
-					echo '<label for="it-exchange-add-purchase-product-' . $product->ID . '" >' . $product->post_title . '</label>';
-					echo '</p>';
-				}
-				?>
-				<label for="it-exchange-add-manual-purchase-total-paid"><?Php _e( 'Total Paid', 'LION' ); ?></label><input id="it-exchange-add-manual-purchase-total-paid" type="text" value="<?php echo $default['total']; ?>" name="total" />
-				<div class="field">
+	<title><?php _e( 'Add Manual Purchase', 'LION' ); ?></title>
+	<script type="text/javascript">
+		var ajaxurl = '<?php echo admin_url( 'admin-ajax.php' ); ?>';
+	</script>
+	<?php
+	wp_enqueue_style( 'colors' );
+	wp_enqueue_style( 'ie' );
+	wp_enqueue_script( 'utils' );
+	
+	$hook_suffix = 'user.php-ithemes-manual-purchase-thickbox';
+	do_action( 'admin_enqueue_scripts', $hook_suffix );
+	do_action( "admin_print_styles-$hook_suffix" );
+	do_action( 'admin_print_styles' );
+	do_action( "admin_print_scripts-$hook_suffix" );
+	do_action( 'admin_print_scripts' );
+	do_action( "admin_head-$hook_suffix" );
+	do_action( 'admin_head' );
+	
+	$admin_body_class = preg_replace('/[^a-z0-9_-]+/i', '-', $hook_suffix);
+	
+	if ( get_user_setting('mfold') == 'f' )
+		$admin_body_class .= ' folded';
+	
+	if ( !get_user_setting('unfold') )
+		$admin_body_class .= ' auto-fold';
+	
+	if ( is_rtl() )
+		$admin_body_class .= ' rtl';
+	
+	if ( $current_screen->post_type )
+		$admin_body_class .= ' post-type-' . $current_screen->post_type;
+	
+	if ( $current_screen->taxonomy )
+		$admin_body_class .= ' taxonomy-' . $current_screen->taxonomy;
+	
+	$admin_body_class .= ' branch-' . str_replace( array( '.', ',' ), '-', floatval( $wp_version ) );
+	$admin_body_class .= ' version-' . str_replace( '.', '-', preg_replace( '/^([.0-9]+).*/', '$1', $wp_version ) );
+	$admin_body_class .= ' admin-color-' . sanitize_html_class( get_user_option( 'admin_color' ), 'fresh' );
+	$admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( '_', '-', get_locale() ) ) );
+	
+	if ( wp_is_mobile() )
+		$admin_body_class .= ' mobile';
+	
+	if ( is_multisite() )
+		$admin_body_class .= ' multisite';
+	
+	if ( is_network_admin() )
+		$admin_body_class .= ' network-admin';
+	
+	$admin_body_class .= ' no-customize-support no-svg';
+	?>
+	</head>
+	<body class="wp-admin wp-core-ui no-js <?php echo apply_filters( 'admin_body_class', '' ) . " $admin_body_class"; ?>">
+		<div class="wrap">
+			<?php
+			screen_icon( 'it-exchange-manual-purchases' );
+			?>
+			<h2><?php _e( 'Add Manual Purchase', 'LION' ); ?></h2>
+			<form id="it-exchange-manual-purchase-add-payment" name="it-exchange-manual-purchase-add-payment" method="post">
+			<div class="it-exchange-add-manual-purchase">
+				<input id="it-exchange-manual-purchase-userid" type="hidden" value="<?php echo $default['userid']; ?>" name="userid" />
+				<div class="it-exchange-add-manual-purchase-product-options">
+					<h3><?php _e( 'Select Products', 'LION' ); ?></h3>
 					<?php
-					submit_button( 'Cancel', 'large', 'cancel' );
-					submit_button( 'Submit', 'primary large' );
-					wp_nonce_field( 'it-exchange-manual-purchase' );
+					$args = array(
+						'product_type' => !empty( $_GET['product_type'] ) ? $_GET['product_type'] : '',
+					);
+					$products = it_exchange_get_products( $args );
+					
+					foreach( $products as $product ) {
+						$checked = checked( in_array( $product->ID, $default['product_ids'] ), true, false );
+						echo '<p>';
+						echo '<input id="it-exchange-add-purchase-product-' . $product->ID . '" class="it-exchange-add-pruchase-product" type="checkbox" value="' . $product->ID . '" name="product_ids[]" ' . $checked . '/>';
+						echo '<label for="it-exchange-add-purchase-product-' . $product->ID . '" >' . $product->post_title . '</label>';
+						echo '</p>';
+					}
 					?>
+					<label for="it-exchange-add-manual-purchase-total-paid"><?Php _e( 'Total Paid', 'LION' ); ?></label><input id="it-exchange-add-manual-purchase-total-paid" type="text" value="<?php echo $default['total']; ?>" name="total" />
+					<div class="field">
+						<input onclick="self.parent.tb_remove();return false" type="submit" value="Cancel" class="button button-large" id="cancel" name="cancel">
+						<?php
+						submit_button( 'Submit', 'primary large' );
+						wp_nonce_field( 'it-exchange-manual-purchase-add-payment', 'it-exchange-manual-purchase-add-payment-nonce' );
+						?>
+					</div>
 				</div>
 			</div>
+			</form>
 		</div>
-		</form>
-	</div>
+		
+	<?php
+	do_action( 'admin_footer', '' );
+	do_action( 'admin_print_footer_scripts' );
+	do_action( 'admin_footer-' . $hook_suffix );
+	
+	// get_site_option() won't exist when auto upgrading from <= 2.7
+	if ( function_exists( 'get_site_option' ) ) {
+		if ( false === get_site_option( 'can_compress_scripts' ) )
+			compression_test();
+	}
+	?>
+	
+	<div class="clear"></div></div><!-- wpwrap -->
+	<script type="text/javascript">if(typeof wpOnload=='function')wpOnload();</script>
+	</body>
+	</html>
+	
 	<?php
 	die();
 }
