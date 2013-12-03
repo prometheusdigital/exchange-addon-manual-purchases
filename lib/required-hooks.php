@@ -30,9 +30,14 @@ function it_exchange_manual_purchases_addon_user_row_actions( $actions, $user_ob
 }
 add_filter( 'user_row_actions', 'it_exchange_manual_purchases_addon_user_row_actions', 10, 2 );
 
+/**
+ * Adds iThemes Exchange Purchase button to User's Product View
+ *
+ * @since 1.0.0
+ * @return void
+*/
 function it_exchange_manual_purchases_admin_user_products() {
 	$userid = empty( $_GET['user_id'] ) ? '' : $_GET['user_id'];
-	
 	if ( !empty( $userid ) ) {
 		add_thickbox();
 		$args = array(
@@ -175,6 +180,13 @@ function it_exchange_manual_purchases_transaction_is_cleared_for_delivery( $clea
 }
 add_filter( 'it_exchange_manual-purchases_transaction_is_cleared_for_delivery', 'it_exchange_manual_purchases_transaction_is_cleared_for_delivery', 10, 2 );
 
+/**
+ * Process Manual Purchase Requests
+ *
+ * @since 1.0.0
+ *
+ * @return void
+*/
 function it_exchange_manual_purchases_request() {
 	if ( empty( $_POST['it-exchange-manual-purchase-add-payment-nonce'] ) )
 		return;
