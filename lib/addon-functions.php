@@ -11,10 +11,10 @@ function it_exchange_manual_purchase_print_add_payment_screen() {
 	
 	$default = array(
 		'userid'      => empty( $_GET['userid'] ) ? '' : $_GET['userid'],
-		'username'    => '',
+		'user_login'  => '',
 		'email'       => '',
-		'firstname'   => '',
-		'lastname'    => '',
+		'first_name'  => '',
+		'last_name'   => '',
 		'product_ids' => array(),
 		'total'       => '',
 	);
@@ -23,12 +23,10 @@ function it_exchange_manual_purchase_print_add_payment_screen() {
 		
 		$post = array(
 			'userid'      => empty( $_POST['userid'] )      ? ''      : $_POST['userid'],
-			'username'    => empty( $_POST['username'] )    ? ''      : $_POST['username'],
+			'user_login'  => empty( $_POST['user_login'] )  ? ''      : $_POST['user_login'],
 			'email'       => empty( $_POST['email'] )       ? ''      : $_POST['email'],
-			'firstname'   => empty( $_POST['firstname'] )   ? ''      : $_POST['firstname'],
-			'lastname'    => empty( $_POST['lastname'] )    ? ''      : $_POST['lastname'],
-			'password1'   => empty( $_POST['password1'] )   ? ''      : $_POST['password1'],
-			'password2'   => empty( $_POST['password2'] )   ? ''      : $_POST['password2'],
+			'first_name'  => empty( $_POST['first_name'] )  ? ''      : $_POST['first_name'],
+			'last_name'   => empty( $_POST['last_name'] )   ? ''      : $_POST['last_name'],
 			'product_ids' => empty( $_POST['product_ids'] ) ? array() : $_POST['product_ids'],
 			'total'       => empty( $_POST['total'] )       ? ''      : $_POST['total'],
 		);
@@ -36,104 +34,82 @@ function it_exchange_manual_purchase_print_add_payment_screen() {
 		if ( check_admin_referer( 'it-exchange-manual-purchase-add-payment', 'it-exchange-manual-purchase-add-payment-nonce' ) ) {
 		
 			if ( !empty( $post['product_ids'] ) ) {
-				if ( !empty( $post['userid'] ) || ( !empty( $post['username'] ) && !empty( $post['email'] ) ) ) {
+				if ( !empty( $post['userid'] ) || ( !empty( $post['user_login'] ) && !empty( $post['email'] ) ) ) {
 					if ( empty( $post['userid'] ) ) {
-						if ( !empty( $post['password1'] ) || !empty( $post['password2'] ) ) {
-							if ( $post['password1'] === $post['password2'] )
-								$password = $post['password1'];
-							else
-								$error_message = __( 'Password do not match.', 'LION' );
-						} else {
-							$password = wp_generate_password();
+						if ( empty( $_POST['pass1'] ) && empty( $_POST['pass2'] ) ) {
+							$_POST['pass1'] = wp_generate_password();
+							$_POST['pass2'] = $_POST['pass1'];
+							$_POST['send_password'] = true;
 						}
-						if ( !empty( $password ) ) {
-							$args = array(
-								'user_login' => $post['username'],
-								'user_email' => $post['email'],
-								'user_pass'  => $password,
-								'first_name' => $post['firstname'],
-								'last_name'  => $post['lastname'],
-							);
-							$user_id = wp_insert_user( $args );
-						}
+						$user_id = it_exchange_register_user();
 					} else {
 						$user_id = $post['userid'];
 					}
-					
-					if ( empty( $error_message ) ) {
 							
-						if ( !is_wp_error( $user_id ) ) {
-							
-							$user = get_user_by( 'id', $user_id  );	
-							
-							if ( !empty( $user ) ) {
-								// Grab default currency
-								$settings = it_exchange_get_option( 'settings_general' );
-								$currency = $settings['default-currency'];
-								$description = array();
-		
-								foreach ( $post['product_ids'] as $product_id ) {
-									if ( ! $product = it_exchange_get_product( $product_id ) ) {
-										$error_message = sprintf( __( 'No Product Found - Product ID: %s', 'LION' ), $product_id );
-										continue;
-									}
-										
-									$itemized_data = apply_filters( 'it_exchange_add_itemized_data_to_cart_product', array(), $product_id );
-									if ( ! is_serialized( $itemized_data ) )
-										$itemized_data = maybe_serialize( $itemized_data );
-									$key = md5( $itemized_data );
+					if ( !is_wp_error( $user_id ) ) {
+						
+						$user = get_user_by( 'id', $user_id  );	
+						
+						if ( !empty( $user ) ) {
+							// Grab default currency
+							$settings = it_exchange_get_option( 'settings_general' );
+							$currency = $settings['default-currency'];
+							$description = array();
+	
+							foreach ( $post['product_ids'] as $product_id ) {
+								if ( ! $product = it_exchange_get_product( $product_id ) ) {
+									$error_message = sprintf( __( 'No Product Found - Product ID: %s', 'LION' ), $product_id );
+									continue;
+								}
 									
-									$products[$key]['product_base_price'] = it_exchange_get_product_feature( $product_id, 'base-price' );
-									$products[$key]['product_subtotal'] = $products[$key]['product_base_price']; //need to add count
-									$products[$key]['product_name'] = get_the_title( $product_id );
-									$products[$key]['product_id'] = $product_id;
-									$description[] = $products[$key]['product_name'];
-								}
+								$itemized_data = apply_filters( 'it_exchange_add_itemized_data_to_cart_product', array(), $product_id );
+								if ( ! is_serialized( $itemized_data ) )
+									$itemized_data = maybe_serialize( $itemized_data );
+								$key = md5( $itemized_data );
 								
-								if ( empty( $error_message ) ) {
-									$description = apply_filters( 'it_exchange_get_cart_description', join( ', ', $description ), $description );
-	
-									// Package it up and send it to the transaction method add-on
-									$total = empty( $post['total'] ) ? 0 : it_exchange_convert_to_database_number( $post['total'] );
-									$transaction_object = new stdClass();
-									$transaction_object->total                  = number_format( it_exchange_convert_from_database_number( $total ), 2, '.', '' );
-									$transaction_object->currency               = $currency;
-									$transaction_object->description            = $description;
-									$transaction_object->products               = $products;
-									//$transaction_object->coupons                = it_exchange_get_applied_coupons();
-									//$transaction_object->coupons_total_discount = it_exchange_get_total_coupons_discount( 'cart', array( 'format_price' => false ));
-								
-									// Tack on Shipping and Billing address
-									//$transaction_object->shipping_address       = it_exchange_get_cart_shipping_address();
-									//$transaction_object->billing_address        = apply_filters( 'it_exchange_billing_address_purchase_requirement_enabled', false ) ? it_exchange_get_cart_billing_address() : false;
-								
-									// Shipping Method and total
-									//$transaction_object->shipping_method        = it_exchange_get_cart_shipping_method();
-									//$transaction_object->shipping_method_multi  = it_exchange_get_cart_data( 'multiple-shipping-methods' );
-									//$transaction_object->shipping_total         = it_exchange_convert_to_database_number( it_exchange_get_cart_shipping_cost( false, false ) );
-		
-									$payment_id = it_exchange_manual_purchases_addon_process_transaction( $user_id, $transaction_object );
-	
-									$url = add_query_arg( array( 'action' => 'edit', 'post' => $payment_id ), admin_url( 'post.php' ) );
-									$status_message = sprintf( __( 'Successfully added Manual Purchase. <a href="%s">View Transaction</a>', 'LION' ), $url );
-								}
-							} else {
-								$error_message = __( 'No user found.', 'LION' );
+								$products[$key]['product_base_price'] = it_exchange_get_product_feature( $product_id, 'base-price' );
+								$products[$key]['product_subtotal'] = $products[$key]['product_base_price']; //need to add count
+								$products[$key]['product_name'] = get_the_title( $product_id );
+								$products[$key]['product_id'] = $product_id;
+								$description[] = $products[$key]['product_name'];
 							}
-								
-										
+							
+							if ( empty( $error_message ) ) {
+								$description = apply_filters( 'it_exchange_get_cart_description', join( ', ', $description ), $description );
+
+								// Package it up and send it to the transaction method add-on
+								$total = empty( $post['total'] ) ? 0 : it_exchange_convert_to_database_number( $post['total'] );
+								$transaction_object = new stdClass();
+								$transaction_object->total                  = number_format( it_exchange_convert_from_database_number( $total ), 2, '.', '' );
+								$transaction_object->currency               = $currency;
+								$transaction_object->description            = $description;
+								$transaction_object->products               = $products;
+								//$transaction_object->coupons                = it_exchange_get_applied_coupons();
+								//$transaction_object->coupons_total_discount = it_exchange_get_total_coupons_discount( 'cart', array( 'format_price' => false ));
+							
+								// Tack on Shipping and Billing address
+								//$transaction_object->shipping_address       = it_exchange_get_cart_shipping_address();
+								//$transaction_object->billing_address        = apply_filters( 'it_exchange_billing_address_purchase_requirement_enabled', false ) ? it_exchange_get_cart_billing_address() : false;
+							
+								// Shipping Method and total
+								//$transaction_object->shipping_method        = it_exchange_get_cart_shipping_method();
+								//$transaction_object->shipping_method_multi  = it_exchange_get_cart_data( 'multiple-shipping-methods' );
+								//$transaction_object->shipping_total         = it_exchange_convert_to_database_number( it_exchange_get_cart_shipping_cost( false, false ) );
+	
+								$payment_id = it_exchange_manual_purchases_addon_process_transaction( $user_id, $transaction_object );
+
+								$url = add_query_arg( array( 'action' => 'edit', 'post' => $payment_id ), admin_url( 'post.php' ) );
+								$status_message = sprintf( __( 'Successfully added Manual Purchase. <a href="%s">View Transaction</a>', 'LION' ), $url );
+							}
 						} else {
-							
-							$error_message = $user_id->get_error_message();
-							
+							$error_message = __( 'No user found.', 'LION' );
 						}
-					
+					} else {
+						$error_message = $user_id->get_error_message();
 					}
-				
 				} else {
 					$error_message = __( 'You must select an existing user or create a new one.', 'LION' );
 				}
-				
 			} else {
 				$error_message = __( 'You must select products to create a manual purchase.', 'LION' );
 			}
@@ -185,16 +161,16 @@ function it_exchange_manual_purchase_print_add_payment_screen() {
 				<div class="it-exchange-add-manual-purchase-user-option-add-new">
 				<h3><?php _e( 'Add a New Customer', 'LION' ); ?></h3>
 					<div class="field">
-						<label for="it-exchange-manual-purchase-new-username"><?Php _e( 'Username', 'LION' ); ?></label><input id="it-exchange-manual-purchase-new-username" type="text" value="<?php echo $default['username']; ?>" name="username" />
+						<label for="it-exchange-manual-purchase-new-username"><?Php _e( 'Username', 'LION' ); ?></label><input id="it-exchange-manual-purchase-new-username" type="text" value="<?php echo $default['user_login']; ?>" name="user_login" />
 					</div>
 					<div class="field">
 						<label for="it-exchange-manual-purchase-new-email"><?php _e( 'Email', 'LION' ); ?></label><input id="it-exchange-manual-purchase-new-email" type="text" value="<?php echo $default['email']; ?>" name="email" />
 					</div>
 					<div class="field">
-						<label for="it-exchange-manual-purchase-new-first-name"><?php _e( 'First Name', 'LION' ); ?></label><input id="it-exchange-manual-purchase-new-first-name" type="text" value="<?php echo $default['firstname']; ?>" name="firstname" />
+						<label for="it-exchange-manual-purchase-new-first-name"><?php _e( 'First Name', 'LION' ); ?></label><input id="it-exchange-manual-purchase-new-first-name" type="text" value="<?php echo $default['first_name']; ?>" name="first_name" />
 					</div>
 					<div class="field">
-						<label for="it-exchange-manual-purchase-new-last-name"><?php _e( 'Last Name', 'LION' ); ?></label><input id="it-exchange-manual-purchase-new-last-name" type="text" value="<?php echo $default['lastname']; ?>" name="lastname" />
+						<label for="it-exchange-manual-purchase-new-last-name"><?php _e( 'Last Name', 'LION' ); ?></label><input id="it-exchange-manual-purchase-new-last-name" type="text" value="<?php echo $default['last_name']; ?>" name="last_name" />
 					</div>
 					<div class="field set-password">
 						<a href="#"><?php _e( 'Set password manually.', 'LION' ); ?></a>
@@ -204,10 +180,10 @@ function it_exchange_manual_purchase_print_add_payment_screen() {
 					</div>
 					<div class="hidden show-password-fields">
 					<div class="field">
-						<label for="it-exchange-manual-purchase-new-password1"><?php _e( 'Password', 'LION' ); ?></label><input id="it-exchange-manual-purchase-new-password1" type="password" value="" name="password1" />
+						<label for="it-exchange-manual-purchase-new-password1"><?php _e( 'Password', 'LION' ); ?></label><input id="it-exchange-manual-purchase-new-password1" type="password" value="" name="pass1" />
 					<div class="field">
 					</div>
-						<label for="it-exchange-manual-purchase-new-password2"><?php _e( 'Repeat Password', 'LION' ); ?></label><input id="it-exchange-manual-purchase-new-password2" type="password" value="" name="password2" />
+						<label for="it-exchange-manual-purchase-new-password2"><?php _e( 'Repeat Password', 'LION' ); ?></label><input id="it-exchange-manual-purchase-new-password2" type="password" value="" name="pass2" />
 					</div>
 					</div>
 				</div>
