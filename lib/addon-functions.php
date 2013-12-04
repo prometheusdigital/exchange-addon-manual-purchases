@@ -10,25 +10,41 @@ function it_exchange_manual_purchase_print_add_payment_screen() {
 	$error_message = '';
 	
 	$default = array(
-		'userid'      => empty( $_GET['userid'] ) ? '' : $_GET['userid'],
-		'user_login'  => '',
-		'email'       => '',
-		'first_name'  => '',
-		'last_name'   => '',
-		'product_ids' => array(),
-		'total'       => '',
+		'userid'       => empty( $_GET['userid'] ) ? '' : $_GET['userid'],
+		'user_login'   => '',
+		'email'        => '',
+		'first_name'   => '',
+		'last_name'    => '',
+		'product_type' => '',
+		'search'       => '',
+		'product_ids'  => array(),
+		'total'        => '',
 	);
-
-	if ( !empty( $_POST ) ) {
-		
+	
+	if ( !empty( $_POST['search_submit'] ) ) {
 		$post = array(
-			'userid'      => empty( $_POST['userid'] )      ? ''      : $_POST['userid'],
-			'user_login'  => empty( $_POST['user_login'] )  ? ''      : $_POST['user_login'],
-			'email'       => empty( $_POST['email'] )       ? ''      : $_POST['email'],
-			'first_name'  => empty( $_POST['first_name'] )  ? ''      : $_POST['first_name'],
-			'last_name'   => empty( $_POST['last_name'] )   ? ''      : $_POST['last_name'],
-			'product_ids' => empty( $_POST['product_ids'] ) ? array() : $_POST['product_ids'],
-			'total'       => empty( $_POST['total'] )       ? ''      : $_POST['total'],
+			'userid'       => empty( $_POST['userid'] )              ? ''      : $_POST['userid'],
+			'user_login'   => empty( $_POST['user_login'] )          ? ''      : $_POST['user_login'],
+			'email'        => empty( $_POST['email'] )               ? ''      : $_POST['email'],
+			'first_name'   => empty( $_POST['first_name'] )          ? ''      : $_POST['first_name'],
+			'last_name'    => empty( $_POST['last_name'] )           ? ''      : $_POST['last_name'],
+			'product_type' => empty( $_POST['product_type_filter'] ) ? ''      : $_POST['product_type_filter'],
+			'search'       => empty( $_POST['search'] )              ? ''      : $_POST['search'],
+			'product_ids'  => empty( $_POST['product_ids'] )         ? array() : $_POST['product_ids'],
+			'total'        => empty( $_POST['total'] )               ? ''      : $_POST['total'],
+		);
+		$default = wp_parse_args( $post, $default );
+	} else if ( !empty( $_POST['submit'] ) ) {
+		$post = array(
+			'userid'       => empty( $_POST['userid'] )              ? ''      : $_POST['userid'],
+			'user_login'   => empty( $_POST['user_login'] )          ? ''      : $_POST['user_login'],
+			'email'        => empty( $_POST['email'] )               ? ''      : $_POST['email'],
+			'first_name'   => empty( $_POST['first_name'] )          ? ''      : $_POST['first_name'],
+			'last_name'    => empty( $_POST['last_name'] )           ? ''      : $_POST['last_name'],
+			'product_type' => empty( $_POST['product_type_filter'] ) ? ''      : $_POST['product_type_filter'],
+			'search'       => empty( $_POST['search'] )              ? ''      : $_POST['search'],
+			'product_ids'  => empty( $_POST['product_ids'] )         ? array() : $_POST['product_ids'],
+			'total'        => empty( $_POST['total'] )               ? ''      : $_POST['total'],
 		);
 	
 		if ( check_admin_referer( 'it-exchange-manual-purchase-add-payment', 'it-exchange-manual-purchase-add-payment-nonce' ) ) {
@@ -193,50 +209,28 @@ function it_exchange_manual_purchase_print_add_payment_screen() {
 			<div class="it-exchange-add-manual-purchase-product-options">
 				<h3><?php _e( 'Select Products', 'LION' ); ?></h3>
 				<?php
-				$args = array(
-					'product_type' => !empty( $_GET['product_type'] ) ? $_GET['product_type'] : '',
-				);
-				$products = it_exchange_get_products( $args );
-				
-				foreach( $products as $product ) {
-					$img_output = '';
-										
-					if ( it_exchange_product_supports_feature( $product->ID, 'product-images' )
-							&& it_exchange_product_has_feature( $product->ID, 'product-images' ) ) {
-			
-						$product_images = it_exchange_get_product_feature( $product->ID, 'product-images' );
-						$img_src = wp_get_attachment_thumb_url( $product_images[0] );
-			
-						ob_start();
-						?>
-						<div class="it-exchange-feature-image-<?php echo $product->ID; ?> it-exchange-featured-image">
-							<img alt="" src="<?php echo $img_src ?>" />
-						</div>
-						<?php
-						$img_output = ob_get_clean();
-			
-					}
-					/*
-					<li data-toggle="digital-downloads-product-type-wizard" product-type="digital-downloads-product-type" class="product-option digital-downloads-product-type-product-option selected">
-						<div class="option-spacer">
-							<img alt="Digital Downloads" src="http://lew.internal.ithemes.com/wp-content/plugins/ithemes-exchange/core-addons/product-types/digital-downloads/images/wizard-downloads.png">
-							<span class="product-name">Digital Downloads</span>
-						</div>
-						<input type="hidden" value="digital-downloads-product-type" name="it-exchange-product-types[]" class="enable-digital-downloads-product-type">
-					</li>
-					*/
-					if ( in_array( $product->ID, $default['product_ids'] ) )
-						$value = $product->ID;
-					else
-						$value = '';
-					
-					echo '<div class="it-exchange-add-purchase-product" data-product-id="' . $product->ID . '">';
-					echo $img_output;
-					echo '<span class="product-name">' . $product->post_title . '</span>';
-					echo '<input id="it-exchange-add-purchase-product-' . $product->ID . '" type="hidden" value="' . $value . '" name="product_ids[]" />';
-					echo '</div>';
-				}
+				$product_types = it_exchange_get_enabled_addons( array( 'category' => 'product-type' ) );
+				if ( is_array( $product_types ) && count( $product_types ) > 1 ) {
 				?>
+				<div id="select-product-type-filter">
+					<select id="product-type-filter" name="product_type_filter">
+						<option value=""><?php _e( 'View All Product Types', 'LION' ); ?></option>
+						<?php
+						foreach ( $product_types as $slug => $params ) {
+							echo '<option value="' . esc_attr( $slug ) . '" ' . checked( $slug, $default['product_type'], true ) . '>' . esc_attr( $params['name'] ) . '</option>';
+						}
+						?>
+					</select>
+					<?php submit_button( __( 'Filter', 'LION' ), 'secondary small', 'filter_submit' ); ?>
+				</div>
+				<?php 
+				} 
+				?>
+				<div id="select-product-search">
+					<input type="text" name="product-search" id="product-search" value="<?php echo $default['search']; ?>" />
+					<?php submit_button( __( 'Search Products', 'LION' ), 'secondary small', 'search_submit' ); ?>
+				</div>
+				<?php echo it_exchange_manual_purchases_product_listing( $default ); ?>
 				<div class="clear"></div>
 				<label for="it-exchange-add-manual-purchase-total-paid"><?Php _e( 'Total Paid', 'LION' ); ?></label><input id="it-exchange-add-manual-purchase-total-paid" type="text" value="<?php echo $default['total']; ?>" name="total" />
 				<div class="field">
@@ -315,4 +309,66 @@ function it_exchange_manual_purchases_addon_verify_unique_uniqid( $uniqid ) {
 	}
 
 	return false;
+}
+
+function it_exchange_manual_purchases_product_listing( $args ) {
+	$default = array(
+		'product_type' => '',
+		'search'       => '',
+		'product_ids'  => array(),
+	);
+	$default = wp_parse_args( $args, $default );
+
+	$args = array(
+		'product_type'   => !empty( $default['product_type'] ) ? $default['product_type'] : '',
+		'posts_per_page' => -1,
+	);
+	
+	if ( !empty( $default['search'] ) )
+		$args['s'] = $default['search'];
+				
+	$products = it_exchange_get_products( $args );
+	
+	$output = '<div id="it-exchange-add-purchase-product-list">';
+	foreach( $products as $product ) {
+		$img_output = '';
+							
+		if ( it_exchange_product_supports_feature( $product->ID, 'product-images' )
+				&& it_exchange_product_has_feature( $product->ID, 'product-images' ) ) {
+
+			$product_images = it_exchange_get_product_feature( $product->ID, 'product-images' );
+			$img_src = wp_get_attachment_thumb_url( $product_images[0] );
+
+			ob_start();
+			?>
+			<div class="it-exchange-feature-image-<?php echo $product->ID; ?> it-exchange-featured-image">
+				<img alt="" src="<?php echo $img_src ?>" />
+			</div>
+			<?php
+			$img_output = ob_get_clean();
+
+		}
+		/*
+		<li data-toggle="digital-downloads-product-type-wizard" product-type="digital-downloads-product-type" class="product-option digital-downloads-product-type-product-option selected">
+			<div class="option-spacer">
+				<img alt="Digital Downloads" src="http://lew.internal.ithemes.com/wp-content/plugins/ithemes-exchange/core-addons/product-types/digital-downloads/images/wizard-downloads.png">
+				<span class="product-name">Digital Downloads</span>
+			</div>
+			<input type="hidden" value="digital-downloads-product-type" name="it-exchange-product-types[]" class="enable-digital-downloads-product-type">
+		</li>
+		*/
+		if ( in_array( $product->ID, $default['product_ids'] ) )
+			$value = $product->ID;
+		else
+			$value = '';
+		
+		$output .= '<div class="it-exchange-add-purchase-product" data-product-id="' . $product->ID . '">';
+		$output .= $img_output;
+		$output .= '<span class="product-name">' . $product->post_title . '</span>';
+		$output .= '<input id="it-exchange-add-purchase-product-' . $product->ID . '" type="hidden" value="' . $value . '" name="product_ids[]" />';
+		$output .= '</div>';
+	}
+	$output .= '</div>';
+	
+	return $output;
 }
