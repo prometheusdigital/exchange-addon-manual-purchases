@@ -56,6 +56,7 @@ function it_exchange_manual_purchase_for_user_print_add_products_screen() {
 		'search'       => '',
 		'product_ids'  => array(),
 		'total'        => '',
+		'description'  => '',
 	);
 	
 	if ( !empty( $_POST['search_submit'] ) ) {
@@ -65,6 +66,7 @@ function it_exchange_manual_purchase_for_user_print_add_products_screen() {
 			'search'       => empty( $_POST['search'] )              ? ''      : $_POST['search'],
 			'product_ids'  => empty( $_POST['product_ids'] )         ? array() : $_POST['product_ids'],
 			'total'        => empty( $_POST['total'] )               ? ''      : $_POST['total'],
+			'description'  => empty( $_POST['description'] )         ? ''      : $_POST['description'],
 		);
 		$default = wp_parse_args( $post, $default );
 	} else if ( !empty( $_POST ) ) {
@@ -74,6 +76,7 @@ function it_exchange_manual_purchase_for_user_print_add_products_screen() {
 			'search'       => empty( $_POST['search'] )              ? ''      : $_POST['search'],
 			'product_ids'  => empty( $_POST['product_ids'] )         ? array() : $_POST['product_ids'],
 			'total'        => empty( $_POST['total'] )               ? ''      : $_POST['total'],
+			'description'  => empty( $_POST['description'] )         ? ''      : $_POST['description'],
 		);
 	
 		if ( check_admin_referer( 'it-exchange-manual-purchase-add-payment', 'it-exchange-manual-purchase-add-payment-nonce' ) ) {
@@ -108,6 +111,7 @@ function it_exchange_manual_purchase_for_user_print_add_products_screen() {
 									$products[$key]['product_subtotal'] = $products[$key]['product_base_price']; //need to add count
 									$products[$key]['product_name'] = get_the_title( $product_id );
 									$products[$key]['product_id'] = $product_id;
+									$products[$key]['count'] = 1;
 									$description[] = $products[$key]['product_name'];
 								}
 							}
@@ -134,9 +138,11 @@ function it_exchange_manual_purchase_for_user_print_add_products_screen() {
 								//$transaction_object->shipping_method_multi  = it_exchange_get_cart_data( 'multiple-shipping-methods' );
 								//$transaction_object->shipping_total         = it_exchange_convert_to_database_number( it_exchange_get_cart_shipping_cost( false, false ) );
 	
-								$payment_id = it_exchange_manual_purchases_addon_process_transaction( $user_id, $transaction_object );
+								$transaction_id = it_exchange_manual_purchases_addon_process_transaction( $user_id, $transaction_object );
+								if ( !empty( $post['description'] ) )
+									update_post_meta( $transaction_id, '_it_exchange_manual_purchase_description', $post['description'] );
 
-								$url = add_query_arg( array( 'action' => 'edit', 'post' => $payment_id ), admin_url( 'post.php' ) );
+								$url = add_query_arg( array( 'action' => 'edit', 'post' => $transaction_id ), admin_url( 'post.php' ) );
 								$status_message = sprintf( __( 'Successfully added Manual Purchase. <a href="%s" target="_top">View Transaction</a>', 'LION' ), $url );
 							}
 						} else {
@@ -258,6 +264,10 @@ function it_exchange_manual_purchase_for_user_print_add_products_screen() {
 					<?php echo it_exchange_manual_purchases_product_listing( $default ); ?>
 					<div class="clear"></div>
 					<label for="it-exchange-add-manual-purchase-total-paid"><?Php _e( 'Total Paid', 'LION' ); ?></label><input id="it-exchange-add-manual-purchase-total-paid" type="text" value="<?php echo $default['total']; ?>" name="total" />
+				<div id="it-exchange-add-manual-purchase-description-div" class="field">
+					<label for="it-exchange-add-manual-purchase-description"><?php _e( 'Purchase Note', 'LION' ); ?></label>
+					<textarea id="it-exchange-add-manual-purchase-description" name="description"><?php esc_attr_e( $default['description'] ); ?></textarea>
+				</div>
 					<div class="field">
 						<input onclick="self.parent.tb_remove();return false" type="submit" value="Cancel" class="button button-large" id="cancel" name="cancel">
 						<?php

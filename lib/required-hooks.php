@@ -198,3 +198,28 @@ function it_exchange_manual_purchases_request() {
 	}
 }
 add_action( 'admin_init', 'it_exchange_manual_purchases_request' );
+
+/**
+ * Display purchase notes for manual purchases
+ *
+ * @since 1.0.0
+ *
+ * @return void
+*/
+function it_exchange_manual_purchases_after_payment_details() {
+	global $post;
+	$transaction = it_exchange_get_transaction( $post );
+	if ( 'manual-purchases' === $transaction->transaction_method ) {
+	?>
+	<div class="it-exchange-manual-purchase-note clearfix spacing-wrapper">
+		<div class="it-exchange-manual-purchase-note-label">
+			<?php _e( 'Manual Purchase Note', 'LION' ); ?>
+		</div>
+		<div class="it-exchange-manual-purchase-note-description">
+			<?php echo $transaction->get_transaction_meta( 'manual_purchase_description', true ); ?>
+		</div>
+	</div>
+	<?php
+	}
+}
+add_action( 'it_exchange_after_payment_details', 'it_exchange_manual_purchases_after_payment_details' );
