@@ -48,7 +48,7 @@ function it_exchange_manual_purchases_admin_user_products() {
 			'height'    => '600',
 		);
 		$url = add_query_arg( $args, get_admin_url() . 'admin-ajax.php' ); 
-		$output = '<a href="' . $url . '" class="button button-primary button-large thickbox it-exchange-add-manual-purchase-for-user">' . __( 'Add Product(s)', 'LION' ) . '</a>';
+		$output = '<p><a href="' . $url . '" class="button button-primary button-large thickbox it-exchange-add-manual-purchase-for-user">' . __( 'Add Product(s)', 'LION' ) . '</a></p>';
 	
 		echo $output;
 	}

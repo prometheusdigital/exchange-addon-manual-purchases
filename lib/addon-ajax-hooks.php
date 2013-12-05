@@ -268,12 +268,10 @@ function it_exchange_manual_purchase_for_user_print_add_products_screen() {
 					<label for="it-exchange-add-manual-purchase-description"><?php _e( 'Purchase Note', 'LION' ); ?></label>
 					<textarea id="it-exchange-add-manual-purchase-description" name="description"><?php esc_attr_e( $default['description'] ); ?></textarea>
 				</div>
-					<div class="field">
+					<div class="field it-exchange-add-manual-purchase-submit">
+						<?php submit_button( 'Submit', 'primary large' ); ?>
 						<input onclick="self.parent.tb_remove();return false" type="submit" value="Cancel" class="button button-large" id="cancel" name="cancel">
-						<?php
-						submit_button( 'Submit', 'primary large' );
-						wp_nonce_field( 'it-exchange-manual-purchase-add-payment', 'it-exchange-manual-purchase-add-payment-nonce' );
-						?>
+						<?php wp_nonce_field( 'it-exchange-manual-purchase-add-payment', 'it-exchange-manual-purchase-add-payment-nonce' ); ?>
 					</div>
 				</div>
 			</div>
