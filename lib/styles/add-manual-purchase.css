@@ -18,6 +18,7 @@
 .it-exchange-add-manual-purchase-submit #submit{margin-right:.5em;}
 
 .it-exchange-add-manual-purchase-product-filter-search{margin-bottom:20px;}
+.it-exchange-add-manual-purchase-product-filter-search:after{content:".";display:block;clear:both;visibility:hidden;line-height:0;height:0;}
 .it-exchange-add-manual-purchase-product-filter-search #select-product-type-filter{float:left;}
 .it-exchange-add-manual-purchase-product-filter-search #select-product-search{float:right;}
 .it-exchange-add-manual-purchase-product-filter-search > div > *{display:inline;}

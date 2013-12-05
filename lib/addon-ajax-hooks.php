@@ -239,28 +239,31 @@ function it_exchange_manual_purchase_for_user_print_add_products_screen() {
 				<input id="it-exchange-manual-purchase-userid" type="hidden" value="<?php echo $default['userid']; ?>" name="userid" />
 				<div class="it-exchange-add-manual-purchase-product-options">
 					<h3><?php _e( 'Select Products', 'LION' ); ?></h3>
-					<?php
-					$product_types = it_exchange_get_enabled_addons( array( 'category' => 'product-type' ) );
-					if ( is_array( $product_types ) && count( $product_types ) > 1 ) {
-					?>
-					<div id="select-product-type-filter">
-						<select id="product-type-filter" name="product_type_filter">
-							<option value=""><?php _e( 'View All Product Types', 'LION' ); ?></option>
-							<?php
-							foreach ( $product_types as $slug => $params ) {
-								echo '<option value="' . esc_attr( $slug ) . '" ' . checked( $slug, $default['product_type'], true ) . '>' . esc_attr( $params['name'] ) . '</option>';
-							}
-							?>
-						</select>
-						<?php submit_button( __( 'Filter', 'LION' ), 'secondary', 'filter_submit' ); ?>
+					<div class="it-exchange-add-manual-purchase-product-filter-search clearfix">
+						<?php
+						$product_types = it_exchange_get_enabled_addons( array( 'category' => 'product-type' ) );
+						if ( is_array( $product_types ) && count( $product_types ) > 1 ) {
+						?>
+						<div id="select-product-type-filter">
+							<select id="product-type-filter" name="product_type_filter">
+								<option value=""><?php _e( 'View All Product Types', 'LION' ); ?></option>
+								<?php
+								foreach ( $product_types as $slug => $params ) {
+									echo '<option value="' . esc_attr( $slug ) . '" ' . checked( $slug, $default['product_type'], true ) . '>' . esc_attr( $params['name'] ) . '</option>';
+								}
+								?>
+							</select>
+							<?php submit_button( __( 'Filter', 'LION' ), 'secondary', 'filter_submit' ); ?>
+						</div>
+						<?php 
+						} 
+						?>
+						<div id="select-product-search">
+							<input type="text" name="product-search" id="product-search" value="<?php echo $default['search']; ?>" />
+							<?php submit_button( __( 'Search Products', 'LION' ), 'secondary', 'search_submit' ); ?>
+						</div>
 					</div>
-					<?php 
-					} 
-					?>
-					<div id="select-product-search">
-						<input type="text" name="product-search" id="product-search" value="<?php echo $default['search']; ?>" />
-						<?php submit_button( __( 'Search Products', 'LION' ), 'secondary', 'search_submit' ); ?>
-					</div>
+					<div class="clear"></div>
 					<?php echo it_exchange_manual_purchases_product_listing( $default ); ?>
 					<div class="clear"></div>
 					<label for="it-exchange-add-manual-purchase-total-paid"><?Php _e( 'Total Paid', 'LION' ); ?></label><input id="it-exchange-add-manual-purchase-total-paid" type="text" value="<?php echo $default['total']; ?>" name="total" />
