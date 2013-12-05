@@ -227,14 +227,14 @@ function it_exchange_manual_purchase_print_add_payment_screen() {
 						}
 						?>
 					</select>
-					<?php submit_button( __( 'Filter', 'LION' ), 'secondary small', 'filter_submit' ); ?>
+					<?php submit_button( __( 'Filter', 'LION' ), 'secondary', 'filter_submit' ); ?>
 				</div>
 				<?php 
 				}
 				?>
 				<div id="select-product-search">
 					<input type="text" name="product-search" id="product-search" value="<?php echo $default['search']; ?>" />
-					<?php submit_button( __( 'Search Products', 'LION' ), 'secondary small', 'search_submit' ); ?>
+					<?php submit_button( __( 'Search Products', 'LION' ), 'secondary', 'search_submit' ); ?>
 				</div>
 				<?php echo it_exchange_manual_purchases_product_listing( $default ); ?>
 				<div class="clear"></div>
