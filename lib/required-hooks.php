@@ -37,12 +37,16 @@ add_filter( 'user_row_actions', 'it_exchange_manual_purchases_addon_user_row_act
  * @return void
 */
 function it_exchange_manual_purchases_admin_user_products() {
-	$userid = empty( $_GET['user_id'] ) ? '' : $_GET['user_id'];
-	if ( !empty( $userid ) ) {
+	if ( empty( $_GET['user_id'] ) )
+	    $user_id = get_current_user_id();
+	else
+	    $user_id = $_GET['user_id'];
+	    
+	if ( !empty( $user_id ) ) {
 		add_thickbox();
 		$args = array(
 			'action'    => 'it-exchange-add-manual-purchase-for-user',
-			'userid'    => $userid,
+			'userid'    => $user_id,
 			'TB_iframe' => 'true',
 			'width'     => '800',
 			'height'    => '600',
