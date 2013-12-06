@@ -10,6 +10,7 @@ function it_exchange_manual_purchase_print_add_payment_screen() {
 	$error_message = '';
 	
 	$default = array(
+		'user_option'  => 'existing',
 		'userid'       => empty( $_GET['userid'] ) ? '' : $_GET['userid'],
 		'user_login'   => '',
 		'email'        => '',
@@ -24,30 +25,32 @@ function it_exchange_manual_purchase_print_add_payment_screen() {
 	
 	if ( !empty( $_POST['search_submit'] ) ) {
 		$post = array(
-			'userid'       => empty( $_POST['userid'] )              ? ''      : $_POST['userid'],
-			'user_login'   => empty( $_POST['user_login'] )          ? ''      : $_POST['user_login'],
-			'email'        => empty( $_POST['email'] )               ? ''      : $_POST['email'],
-			'first_name'   => empty( $_POST['first_name'] )          ? ''      : $_POST['first_name'],
-			'last_name'    => empty( $_POST['last_name'] )           ? ''      : $_POST['last_name'],
-			'product_type' => empty( $_POST['product_type_filter'] ) ? ''      : $_POST['product_type_filter'],
-			'search'       => empty( $_POST['search'] )              ? ''      : $_POST['search'],
-			'product_ids'  => empty( $_POST['product_ids'] )         ? array() : $_POST['product_ids'],
-			'total'        => empty( $_POST['total'] )               ? ''      : $_POST['total'],
-			'description'  => empty( $_POST['description'] )         ? ''      : $_POST['description'],
+			'user_option'  => empty( $_POST['user_option'] )         ? 'existing' : $_POST['user_option'],
+			'userid'       => empty( $_POST['userid'] )              ? ''         : $_POST['userid'],
+			'user_login'   => empty( $_POST['user_login'] )          ? ''         : $_POST['user_login'],
+			'email'        => empty( $_POST['email'] )               ? ''         : $_POST['email'],
+			'first_name'   => empty( $_POST['first_name'] )          ? ''         : $_POST['first_name'],
+			'last_name'    => empty( $_POST['last_name'] )           ? ''         : $_POST['last_name'],
+			'product_type' => empty( $_POST['product_type_filter'] ) ? ''         : $_POST['product_type_filter'],
+			'search'       => empty( $_POST['search'] )              ? ''         : $_POST['search'],
+			'product_ids'  => empty( $_POST['product_ids'] )         ? array()    : $_POST['product_ids'],
+			'total'        => empty( $_POST['total'] )               ? ''         : $_POST['total'],
+			'description'  => empty( $_POST['description'] )         ? ''         : $_POST['description'],
 		);
 		$default = wp_parse_args( $post, $default );
 	} else if ( !empty( $_POST['submit'] ) ) {
 		$post = array(
-			'userid'       => empty( $_POST['userid'] )              ? ''      : $_POST['userid'],
-			'user_login'   => empty( $_POST['user_login'] )          ? ''      : $_POST['user_login'],
-			'email'        => empty( $_POST['email'] )               ? ''      : $_POST['email'],
-			'first_name'   => empty( $_POST['first_name'] )          ? ''      : $_POST['first_name'],
-			'last_name'    => empty( $_POST['last_name'] )           ? ''      : $_POST['last_name'],
-			'product_type' => empty( $_POST['product_type_filter'] ) ? ''      : $_POST['product_type_filter'],
-			'search'       => empty( $_POST['search'] )              ? ''      : $_POST['search'],
-			'product_ids'  => empty( $_POST['product_ids'] )         ? array() : $_POST['product_ids'],
-			'total'        => empty( $_POST['total'] )               ? ''      : $_POST['total'],
-			'description'  => empty( $_POST['description'] )         ? ''      : $_POST['description'],
+			'user_option'  => empty( $_POST['user_option'] )         ? 'existing' : $_POST['user_option'],
+			'userid'       => empty( $_POST['userid'] )              ? ''         : $_POST['userid'],
+			'user_login'   => empty( $_POST['user_login'] )          ? ''         : $_POST['user_login'],
+			'email'        => empty( $_POST['email'] )               ? ''         : $_POST['email'],
+			'first_name'   => empty( $_POST['first_name'] )          ? ''         : $_POST['first_name'],
+			'last_name'    => empty( $_POST['last_name'] )           ? ''         : $_POST['last_name'],
+			'product_type' => empty( $_POST['product_type_filter'] ) ? ''         : $_POST['product_type_filter'],
+			'search'       => empty( $_POST['search'] )              ? ''         : $_POST['search'],
+			'product_ids'  => empty( $_POST['product_ids'] )         ? array()    : $_POST['product_ids'],
+			'total'        => empty( $_POST['total'] )               ? ''         : $_POST['total'],
+			'description'  => empty( $_POST['description'] )         ? ''         : $_POST['description'],
 		);
 	
 		if ( check_admin_referer( 'it-exchange-manual-purchase-add-payment', 'it-exchange-manual-purchase-add-payment-nonce' ) ) {
@@ -158,8 +161,21 @@ function it_exchange_manual_purchase_print_add_payment_screen() {
 		<form id="it-exchange-manual-purchase-add-payment" name="it-exchange-manual-purchase-add-payment" method="post">
 		<div class="it-exchange-add-manual-purchase">
 			<div class="it-exchange-add-manual-purchase-user-options">
-				<div class="it-exchange-add-manual-purchase-user-option-existing">
-				<h3><?php _e( 'Select an Existing Customer', 'LION' ); ?></h3>
+				<div class="invoice-field-container invoice-field-container-client-type">
+					<h3><?php _e( 'New or Existing Customer', 'LION' ); ?></h3>
+					<label for="it-exchange-user-option-existing"><input type="radio" id="it-exchange-user-option-existing" class="it-exchange-user-option" name="user_option" value="existing" <?php checked( 'existing', $default['user_option'] ); ?> />&nbsp;<?php _e( 'Existing Customer', 'LION' ); ?></label>
+					<label for="it-exchange-user-option-new"><input type="radio" id="it-exchange-user-option-new" class="it-exchange-user-option" name="user_option" value="new" <?php checked( 'new', $default['user_option'] ); ?> />&nbsp;<?php _e( 'New Customer', 'LION' ); ?></label>
+				</div>
+				<?php
+				if ( 'existing' === $default['user_option'] ) {
+					$existing_hidden = '';
+					$new_hidden = 'hidden';
+				} else {
+					$existing_hidden = 'hidden';
+					$new_hidden = '';
+				}
+				?>
+				<div class="it-exchange-add-manual-purchase-user-option-existing <?php echo $existing_hidden; ?>">
 					<div class="field field it-exchange-manual-purchase-existing-userid">
 					<label for="it-exchange-manual-purchase-existing-username"><?Php _e( 'Username', 'LION' ); ?></label>
 					<?php 
@@ -179,11 +195,7 @@ function it_exchange_manual_purchase_print_add_payment_screen() {
 					?>
 					</div>
 				</div>
-				<div class="it-exchange-add-manual-purchase-user-option-or">
-				<h4><?php _e( 'OR', 'LION' ); ?></h4>
-				</div>
-				<div class="it-exchange-add-manual-purchase-user-option-add-new">
-				<h3><?php _e( 'Add a New Customer', 'LION' ); ?></h3>
+				<div class="it-exchange-add-manual-purchase-user-option-add-new <?php echo $new_hidden; ?>">
 					<div class="field">
 						<label for="it-exchange-manual-purchase-new-username"><?Php _e( 'Username', 'LION' ); ?></label><input id="it-exchange-manual-purchase-new-username" type="text" value="<?php echo $default['user_login']; ?>" name="user_login" />
 					</div>
