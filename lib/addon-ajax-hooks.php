@@ -142,8 +142,9 @@ function it_exchange_manual_purchase_for_user_print_add_products_screen() {
 								if ( !empty( $post['description'] ) )
 									update_post_meta( $transaction_id, '_it_exchange_manual_purchase_description', $post['description'] );
 
-								$url = add_query_arg( array( 'action' => 'edit', 'post' => $transaction_id ), admin_url( 'post.php' ) );
-								$status_message = sprintf( __( 'Successfully added Manual Purchase. <a href="%s" target="_top">View Transaction</a>', 'LION' ), $url );
+								$transaction_url = add_query_arg( array( 'action' => 'edit', 'post' => $transaction_id ), admin_url( 'post.php' ) );
+								$customer_data_url = add_query_arg( array( 'user_id' => $user_id, 'it_exchange_customer_data' => 1 ), admin_url( 'user-edit.php' ) );
+								$status_message = sprintf( __( 'Successfully added Manual Purchase. <a href="%s" target="_top">View Transaction</a> | <a href="%s" target="_top">View Customer Data</a>', 'LION' ), $transaction_url, $customer_data_url );
 							}
 						} else {
 							$error_message = __( 'No user found.', 'LION' );
