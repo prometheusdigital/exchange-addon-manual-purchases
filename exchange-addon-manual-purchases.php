@@ -63,6 +63,13 @@ function it_exchange_add_manual_purchases_nag() {
 		printf( __( 'To use the Manual Purchases add-on for iThemes Exchange, you must be using iThemes Exchange version 1.7.3 or higher. <a href="%s">Please update now</a>.', 'LION' ), admin_url( 'update-core.php' ) );
 		?>
 	</div>
+	<script type="text/javascript">
+		jQuery( document ).ready( function() {
+			if ( jQuery( '.wrap > h2' ).length == '1' ) {
+				jQuery("#it-exchange-manual-purchases-nag").insertAfter( '.wrap > h2' ).addClass( 'after-h2' );
+			}
+		});
+	</script>
     <?php
 }
 
