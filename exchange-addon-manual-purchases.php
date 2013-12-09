@@ -27,7 +27,7 @@ function it_exchange_register_manual_purchases_addon() {
 	$versions         = get_option( 'it-exchange-versions', false );
 	$current_version  = empty( $versions['current'] ) ? false: $versions['current'];
 	
-	if ( version_compare( $current_version, '1.7.3', '>' ) ) {
+	if ( version_compare( $current_version, '1.7.3', '>=' ) ) {
 		$options = array(
 			'name'              => __( 'Manual Purchases', 'LION' ),
 			'description'       => __( 'Add transactions to your customers, manually.', 'LION' ),
