@@ -1,2 +1,4 @@
+1.0.1 - 2013-12-09 - Lew Ayotte, Justin Kopepasah
+	Fixing version check and nag location
 1.0.0 - 2013-12-09 - Lew Ayotte
 	Initial Release
