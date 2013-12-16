@@ -140,7 +140,7 @@ function it_exchange_manual_purchase_for_user_print_add_products_screen() {
 	
 								$transaction_id = it_exchange_manual_purchases_addon_process_transaction( $user_id, $transaction_object );
 								if ( !empty( $post['description'] ) )
-									update_post_meta( $transaction_id, '_it_exchange_manual_purchase_description', $post['description'] );
+									update_post_meta( $transaction_id, '_it_exchange_transaction_manual_purchase_description', $post['description'] );
 
 								$transaction_url = add_query_arg( array( 'action' => 'edit', 'post' => $transaction_id ), admin_url( 'post.php' ) );
 								$customer_data_url = add_query_arg( array( 'user_id' => $user_id, 'it_exchange_customer_data' => 1 ), admin_url( 'user-edit.php' ) );
