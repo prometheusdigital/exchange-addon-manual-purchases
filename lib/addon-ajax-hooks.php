@@ -18,7 +18,7 @@ function it_exchange_manual_purchases_add_payment_page_add_product() {
 			}
 		}
 	}
-	die( it_exchange_format_price( $price ) );
+	die( html_entity_decode( it_exchange_format_price( $price ), ENT_QUOTES, 'UTF-8' ) );
 }
 add_action( 'wp_ajax_it-exchange-manual-purchases-addon-add-payment-page-select-product', 'it_exchange_manual_purchases_add_payment_page_add_product' );
 
@@ -32,7 +32,7 @@ function it_exchange_manual_purchases_format_price() {
     if ( isset( $_POST['price'] ) )
         $price = it_exchange_convert_to_database_number( $_POST['price'] );
     
-    die( it_exchange_format_price( it_exchange_convert_from_database_number( $price ) ) );
+    die( html_entity_decode( it_exchange_format_price( it_exchange_convert_from_database_number( $price ) ), ENT_QUOTES, 'UTF-8' ) );
 }
 add_action( 'wp_ajax_it-exchange-manual-purchases-format-price', 'it_exchange_manual_purchases_format_price' );
 
