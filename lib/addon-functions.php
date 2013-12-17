@@ -254,6 +254,10 @@ function it_exchange_manual_purchase_print_add_payment_screen() {
 				<?php echo it_exchange_manual_purchases_product_listing( $default ); ?>
 				<div class="clear"></div>
 				<label for="it-exchange-add-manual-purchase-total-paid"><?Php _e( 'Total Paid', 'LION' ); ?></label><input id="it-exchange-add-manual-purchase-total-paid" type="text" value="<?php echo $default['total']; ?>" name="total" />
+				<div id="it-exchange-add-manual-purchase-description-div" class="field">
+					<label for="it-exchange-add-manual-purchase-description"><?php _e( 'Purchase Note', 'LION' ); ?></label>
+					<textarea id="it-exchange-add-manual-purchase-description" name="description"><?php esc_attr_e( $default['description'] ); ?></textarea>
+				</div>
 				<div class="field it-exchange-add-manual-purchase-submit">
 					<?php
 					submit_button( 'Submit', 'primary large' );
