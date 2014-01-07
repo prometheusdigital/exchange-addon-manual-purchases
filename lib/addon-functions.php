@@ -347,6 +347,7 @@ function it_exchange_manual_purchases_product_listing( $args ) {
 	$args = array(
 		'product_type'   => !empty( $default['product_type'] ) ? $default['product_type'] : '',
 		'posts_per_page' => -1,
+		'show_hidden'    => true,
 	);
 	
 	if ( !empty( $default['search'] ) )
