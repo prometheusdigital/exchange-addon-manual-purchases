@@ -11,14 +11,14 @@
 /**
  * Mark this transaction method as okay to manually change transactions
  *
- * @since CHANGEME
+ * @since 1.0.8 
 */
 add_filter( 'it_exchange_manual-purchases_transaction_status_can_be_manually_changed', '__return_true' );
 
 /**
  * Returns status options
  *
- * @since CHANGEME
+ * @since 1.0.8 
  * @return void
 */
 function it_exchange_manual_purchases_get_default_status_options() {
@@ -35,7 +35,7 @@ add_filter( 'it_exchange_get_status_options_for_manual-purchases_transaction', '
 /**
  * Gets the interpretted transaction status from valid transaction statuses
  *
- * @since CHANGEME
+ * @since 1.0.8 
  *
  * @param string $status the string of the stripe transaction
  * @return string translaction transaction status
