@@ -19,3 +19,10 @@
 	Show products hidden from store in select opitons
 1.0.7 - 2014-02-03 - Packaging Bot (lib/updater)
 	Bug Fix: Licensing on SSL-enabled sites now works properly.
+1.0.8 - 2014-06-05 - Lew Ayotte, Glenn Ansley, Elise Alley
+	Add filter to title in product select UI.
+	Add some CSS in for my invoices.
+	Add filter allowing other add-ons to remove products from list
+	Remove calls to console.log()
+	Fixed description in Transaction Object, to prevent missing items when adding multiples to a customer
+	Adding ability to modify payment status
