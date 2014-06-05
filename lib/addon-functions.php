@@ -100,14 +100,12 @@ function it_exchange_manual_purchase_print_add_payment_screen() {
 							}
 							
 							if ( empty( $error_message ) ) {
-								$description = apply_filters( 'it_exchange_get_cart_description', join( ', ', $description ), $description );
-
 								// Package it up and send it to the transaction method add-on
 								$total = empty( $post['total'] ) ? 0 : it_exchange_convert_to_database_number( $post['total'] );
 								$transaction_object = new stdClass();
 								$transaction_object->total                  = number_format( it_exchange_convert_from_database_number( $total ), 2, '.', '' );
 								$transaction_object->currency               = $currency;
-								$transaction_object->description            = implode( ',', $description );
+								$transaction_object->description            = apply_filters( 'it_exchange_get_cart_description', implode( ',', $description ), $description );
 								$transaction_object->products               = $products;
 								//$transaction_object->coupons                = it_exchange_get_applied_coupons();
 								//$transaction_object->coupons_total_discount = it_exchange_get_total_coupons_discount( 'cart', array( 'format_price' => false ));
