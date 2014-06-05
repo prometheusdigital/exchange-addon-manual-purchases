@@ -2,6 +2,7 @@
 .it-exchange-add-purchase-product-selected{border-color:#8EC602;box-shadow:0 0 0 2px #8EC602;}
 .it-exchange-add-purchase-product .it-exchange-featured-image{display:block;width:150px;height:150px;}
 .it-exchange-add-purchase-product .product-name{display:block;width:150px;text-align:center;overflow:hidden;background:#FFF;padding:5px 2px;bottom:0;right:0;left:0;position:absolute;-webkit-box-sizing:border-box;-moz-box-sizing:border-box;-ms-box-sizing:border-box;box-sizing:border-box;}
+.it-exchange-add-purchase-product span.invoice-details{font-size:smaller;}
 .it-exchange-add-manual-purchase h3{margin-top:2em;}
 .it-exchange-add-manual-purchase label{display:block;font-size:13px;font-weight:bold;color:#3d4142;margin-bottom:5px;margin-left:2px;}
 .it-exchange-add-manual-purchase input[type="text"],
