@@ -359,6 +359,10 @@ function it_exchange_manual_purchases_product_listing( $args ) {
 	foreach( $products as $product ) {
 		$img_output = '';
 							
+		// Give other add-ons the ability to skip specific products
+		if ( false === apply_filters( 'it_exchange_manual_purchases_addon_include_product_in_select', true, $product ) )
+			continue;
+
 		if ( it_exchange_product_supports_feature( $product->ID, 'product-images' )
 				&& it_exchange_product_has_feature( $product->ID, 'product-images' ) ) {
 
