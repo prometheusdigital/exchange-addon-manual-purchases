@@ -1,5 +1,4 @@
 <?php
-
 /**
  * This adds a menu item to the Exchange menu pointing to the WP All [post_type] table
  *
@@ -7,6 +6,63 @@
  *
  * @return void
 */
+
+
+/**
+ * Mark this transaction method as okay to manually change transactions
+ *
+ * @since 1.0.8 
+*/
+add_filter( 'it_exchange_manual-purchases_transaction_status_can_be_manually_changed', '__return_true' );
+
+/**
+ * Returns status options
+ *
+ * @since 1.0.8 
+ * @return void
+*/
+function it_exchange_manual_purchases_get_default_status_options() {
+	$options = array(
+		'pending'   => _x( 'Pending', 'Transaction Status', 'LION' ),
+		'Completed' => _x( 'Paid', 'Transaction Status', 'LION' ),
+		'refunded'  => _x( 'Refunded', 'Transaction Status', 'LION' ),
+		'voided'    => _x( 'Voided', 'Transaction Status', 'LION' ),
+	);
+	return $options;
+}
+add_filter( 'it_exchange_get_status_options_for_manual-purchases_transaction', 'it_exchange_manual_purchases_get_default_status_options' );
+
+/**
+ * Gets the interpretted transaction status from valid transaction statuses
+ *
+ * @since 1.0.8 
+ *
+ * @param string $status the string of the stripe transaction
+ * @return string translaction transaction status
+*/
+function it_exchange_manual_purchases_addon_transaction_status_label( $status ) {
+
+	switch ( $status ) {
+		case 'Completed':
+		case 'succeeded':
+		case 'paid':
+			return __( 'Paid', 'LION' );
+			break;
+		case 'refunded':
+			return __( 'Refunded', 'LION' );
+			break;
+		case 'pending':
+			return __( 'Pending', 'LION' );
+			break;
+		case 'voided':
+			return __( 'Voided', 'LION' );
+			break;
+		default:
+			return __( 'Unknown', 'LION' );
+	}
+
+}
+add_filter( 'it_exchange_transaction_status_label_manual-purchases', 'it_exchange_manual_purchases_addon_transaction_status_label' );
 
 /**
  * Adds iThemes Exchange User row action to users.php row actions
