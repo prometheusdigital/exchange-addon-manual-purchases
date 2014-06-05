@@ -397,7 +397,7 @@ function it_exchange_manual_purchases_product_listing( $args ) {
 		
 		$output .= '<div class="it-exchange-add-purchase-product ' . $select .'" data-product-id="' . $product->ID . '">';
 		$output .= $img_output;
-		$output .= '<span class="product-name">' . $product->post_title . '</span>';
+		$output .= '<span class="product-name">' . apply_filters( 'it_exchange_manual_purchases_addon_selected_product_title', $product->post_title, $product ) . '</span>';
 		$output .= '<input id="it-exchange-add-purchase-product-' . $product->ID . '" type="hidden" value="' . $value . '" name="product_ids[]" />';
 		$output .= '</div>';
 	}
