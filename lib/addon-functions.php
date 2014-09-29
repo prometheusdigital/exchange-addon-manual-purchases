@@ -261,6 +261,7 @@ function it_exchange_manual_purchase_print_add_payment_screen() {
 					submit_button( 'Submit', 'primary large' );
 					submit_button( 'Cancel', 'large', 'cancel' );
 					wp_nonce_field( 'it-exchange-manual-purchase-add-payment', 'it-exchange-manual-purchase-add-payment-nonce' );
+					wp_nonce_field( 'it-exchange-register-customer', '_exchange_register_nonce' );
 					?>
 				</div>
 			</div>
