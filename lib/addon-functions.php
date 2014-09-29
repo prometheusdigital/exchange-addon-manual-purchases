@@ -93,7 +93,7 @@ function it_exchange_manual_purchase_print_add_payment_screen() {
 									$products[$key]['product_base_price'] = it_exchange_get_product_feature( $product_id, 'base-price' );
 									$products[$key]['product_subtotal'] = $products[$key]['product_base_price']; //need to add count
 									$products[$key]['product_name'] = get_the_title( $product_id );
-									$products[$key]['product_id'] = $product_id;
+									$products[$key]['product_id'] = (int)$product_id;
 									$products[$key]['count'] = 1;
 									$description[] = $products[$key]['product_name'];
 								}
