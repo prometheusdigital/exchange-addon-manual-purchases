@@ -26,3 +26,7 @@
 	Remove calls to console.log()
 	Fixed description in Transaction Object, to prevent missing items when adding multiples to a customer
 	Adding ability to modify payment status
+1.0.9 - 2014-10-01- Lew Ayotte, Elise Alley
+	When building manual cart/product array, save product ID as cast int
+	Adding nonce for register customer function call
+
