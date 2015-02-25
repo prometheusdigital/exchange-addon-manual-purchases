@@ -77,7 +77,7 @@ function it_exchange_manual_purchase_print_add_payment_screen() {
 							$settings = it_exchange_get_option( 'settings_general' );
 							$currency = $settings['default-currency'];
 							$description = array();
-	
+
 							foreach ( $post['product_ids'] as $product_id ) {
 								if ( !empty( $product_id ) ) {
 									if ( ! $product = it_exchange_get_product( $product_id ) ) {
@@ -98,7 +98,11 @@ function it_exchange_manual_purchase_print_add_payment_screen() {
 									$description[] = $products[$key]['product_name'];
 								}
 							}
-							
+
+							if ( empty( $products ) ) {
+								$error_message = __( 'No Product Selected', 'LION' );
+							}
+
 							if ( empty( $error_message ) ) {
 								// Package it up and send it to the transaction method add-on
 								$total = empty( $post['total'] ) ? 0 : it_exchange_convert_to_database_number( $post['total'] );
