@@ -80,7 +80,7 @@ function it_exchange_manual_purchases_addon_user_row_actions( $actions, $user_ob
 		'height'    => '600',
 	);
 	$url = add_query_arg( $args, get_admin_url() . 'admin-ajax.php' ); 
-	$actions['it_exchange_manual_purchase'] = '<a href="' . $url . '" class="thickbox it-exchange-add-manual-purchase-for-user">' . __( 'Add Product(s)', 'LION' ) . '</a>';
+	$actions['it_exchange_manual_purchase'] = '<a href="' . esc_url( $url ) . '" class="thickbox it-exchange-add-manual-purchase-for-user">' . __( 'Add Product(s)', 'LION' ) . '</a>';
 
 	return $actions;
 }
@@ -108,7 +108,7 @@ function it_exchange_manual_purchases_admin_user_products() {
 			'height'    => '600',
 		);
 		$url = add_query_arg( $args, get_admin_url() . 'admin-ajax.php' ); 
-		$output = '<p><a href="' . $url . '" class="button button-primary button-large thickbox it-exchange-add-manual-purchase-for-user">' . __( 'Add Product(s)', 'LION' ) . '</a></p>';
+		$output = '<p><a href="' . esc_url( $url ) . '" class="button button-primary button-large thickbox it-exchange-add-manual-purchase-for-user">' . __( 'Add Product(s)', 'LION' ) . '</a></p>';
 	
 		echo $output;
 	}
@@ -169,7 +169,7 @@ function it_exchange_manual_purchases_redirect_core_add_edit_screens() {
 
 	// Redirect for add new screen
 	if ( 'post-new.php' == $pagenow && 'it_exchange_tran' == $post_type ) {
-		wp_safe_redirect( add_query_arg( array( 'page' => 'it-exchange-add-manual-purchase' ), get_admin_url() . 'admin.php' ) );
+		wp_safe_redirect( esc_url( add_query_arg( array( 'page' => 'it-exchange-add-manual-purchase' ), get_admin_url() . 'admin.php' ) ) );
 		die();
 	}
 }
@@ -253,7 +253,7 @@ function it_exchange_manual_purchases_request() {
 		return;
 	
 	if ( !empty( $_POST['cancel'] ) ) {
-		wp_safe_redirect( add_query_arg( array( 'post_type' => 'it_exchange_tran' ), 'edit.php' ) );
+		wp_safe_redirect( esc_url( add_query_arg( array( 'post_type' => 'it_exchange_tran' ), 'edit.php' ) ) );
 		die();
 	}
 }
