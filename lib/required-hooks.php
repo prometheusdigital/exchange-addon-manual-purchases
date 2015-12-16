@@ -169,7 +169,7 @@ function it_exchange_manual_purchases_redirect_core_add_edit_screens() {
 
 	// Redirect for add new screen
 	if ( 'post-new.php' == $pagenow && 'it_exchange_tran' == $post_type ) {
-		wp_safe_redirect( esc_url( add_query_arg( array( 'page' => 'it-exchange-add-manual-purchase' ), get_admin_url() . 'admin.php' ) ) );
+		wp_safe_redirect( esc_url_raw( add_query_arg( array( 'page' => 'it-exchange-add-manual-purchase' ), get_admin_url() . 'admin.php' ) ) );
 		die();
 	}
 }
@@ -200,7 +200,7 @@ function it_exchange_manual_purchases_add_menu_item() {
 	if ( ! empty( $_GET['page'] ) && 'it-exchange-add-manual-purchase' == $_GET['page'] ) {
 		$slug = 'it-exchange-add-manual-purchase';
 		$func = 'it_exchange_manual_purchase_print_add_payment_screen';
-		add_submenu_page( 'it-exchange', __( 'Add Manual Purchase', 'LION' ), __( 'Add Manual Purchase', 'LION' ), 'update_plugins', $slug, $func );
+		add_submenu_page( 'it-exchange', __( 'Add Manual Purchase', 'LION' ), __( 'Add Manual Purchase', 'LION' ), 'manage_options', $slug, $func );
 	}
 }
 add_action( 'admin_menu', 'it_exchange_manual_purchases_add_menu_item' );
@@ -253,7 +253,7 @@ function it_exchange_manual_purchases_request() {
 		return;
 	
 	if ( !empty( $_POST['cancel'] ) ) {
-		wp_safe_redirect( esc_url( add_query_arg( array( 'post_type' => 'it_exchange_tran' ), 'edit.php' ) ) );
+		wp_safe_redirect( esc_url_raw( add_query_arg( array( 'post_type' => 'it_exchange_tran' ), 'edit.php' ) ) );
 		die();
 	}
 }
