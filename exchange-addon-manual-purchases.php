@@ -1,7 +1,7 @@
 <?php
 /*
  * Plugin Name: iThemes Exchange - Manual Purchases Add-on
- * Version: 1.3.0
+ * Version: 1.3.1
  * Description: Adds manual purchases functionality to iThemes Exchange
  * Plugin URI: http://ithemes.com/exchange/manual-purchases/
  * Author: iThemes
