@@ -107,6 +107,7 @@ function it_exchange_manual_purchase_print_add_payment_screen() {
 								// Package it up and send it to the transaction method add-on
 								$total = empty( $post['total'] ) ? 0 : it_exchange_convert_to_database_number( $post['total'] );
 								$transaction_object = new stdClass();
+								$transaction_object->cart_id                = it_exchange_create_cart_id();
 								$transaction_object->total                  = number_format( it_exchange_convert_from_database_number( $total ), 2, '.', '' );
 								$transaction_object->currency               = $currency;
 								$transaction_object->description            = apply_filters( 'it_exchange_get_cart_description', implode( ',', $description ), $description );
