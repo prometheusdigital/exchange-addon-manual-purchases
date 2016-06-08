@@ -50,3 +50,5 @@
 	Fix incomplete release
 1.3.2 - 2016-04-14 - Timothy B. Jacobs
 	Add cart ID to transaction object generated from main Add New page
+1.3.3 - 2016-06-08 - Timothy B. Jacobs
+	Fix: Force product ID to be an int in transaction object
