@@ -106,7 +106,7 @@ add_filter( 'it_exchange_transaction_status_label_manual-purchases', 'it_exchang
  * @return array
  */
 function it_exchange_manual_purchases_addon_user_row_actions( $actions, $user_object ) {
-	$url   = admin_url( '?page=it-exchange-add-manual-purchase' );
+	$url   = admin_url( 'admin.php?page=it-exchange-add-manual-purchase' );
 	$url   = esc_url( add_query_arg( 'customer', $user_object->ID, $url ) );
 	$label = __( 'Add Product(s)', 'LION' );
 
@@ -131,7 +131,7 @@ function it_exchange_manual_purchases_admin_user_products() {
 		$user_id = absint( $_GET['user_id'] );
 	}
 
-	$url   = admin_url( '?page=it-exchange-add-manual-purchase' );
+	$url   = admin_url( 'admin.php?page=it-exchange-add-manual-purchase' );
 	$url   = esc_url( add_query_arg( 'customer', $user_id, $url ) );
 	$label = __( 'Add Product(s)', 'LION' );
 
