@@ -149,7 +149,7 @@
     width: 225px;
 }
 
-.address-option input {
+.address-option input[type="radio"] {
     display: none;
 }
 
@@ -176,11 +176,51 @@
     border-width: 2px;
 }
 
+.address-option.errored .address-block {
+    border-color: #dd3d36;
+    border-width: 2px;
+}
+
+.add-new-address-form {
+    background: white;
+    padding: 10px;
+    border: #ccc 1px solid;
+    position: relative;
+}
+
+.add-new-address-form:empty {
+    display: none;
+}
+
 .address-option.primary .address-block span::after {
     content: "\f155";
     font-family: "dashicons";
     color: #ffba00;
     float: right;
+}
+
+.new-address-option {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.new-address-option-editing {
+    width: 460px;
+}
+
+.it-exchange-customer-addresses-edit-address label {
+    width: 49%;
+}
+
+label.it-exchange-address-form-field--address1 {
+    width: 100%;
+}
+
+.add-new-address::before {
+    font-family: "dashicons";
+    content: "\f132";
+    vertical-align: middle;
 }
 
 .shipping-per-item-container {

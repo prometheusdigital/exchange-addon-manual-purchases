@@ -153,7 +153,8 @@ function it_exchange_manual_purchases_addon_admin_wp_enqueue_scripts() {
 
 	wp_enqueue_script( 'it-exchange-manual-purchases-app', ITUtility::get_url_from_file( dirname( __FILE__ ) ) . '/js/app.js', array(
 		'it-exchange-rest',
-		'it-exchange-select2'
+		'it-exchange-select2',
+        'jquery-select-to-autocomplete',
 	) );
 	wp_enqueue_style( 'it-exchange-select2' );
 	wp_enqueue_style( 'dashicons' );
@@ -171,6 +172,10 @@ function it_exchange_manual_purchases_addon_admin_wp_enqueue_scripts() {
 	it_exchange_add_inline_script(
 		'it-exchange-rest',
 		include IT_Exchange::$dir . '/lib/assets/templates/visual-cc.html'
+	);
+	it_exchange_add_inline_script(
+		'it-exchange-rest',
+		include IT_Exchange::$dir . '/lib/assets/templates/address-form.html'
 	);
 
 	it_exchange_add_inline_script( 'it-exchange-manual-purchases-app', include __DIR__ . '/js/templates/Cart.html' );
@@ -270,7 +275,7 @@ function it_exchange_manual_purchases_addon_admin_wp_enqueue_styles() {
 		wp_enqueue_style(
 			'it-exchange-manual-purchases-addon-add-manual-purchase',
 			ITUtility::get_url_from_file( dirname( __FILE__ ) ) . '/styles/add-manual-purchase.css',
-			array( 'it-exchange-select2', 'it-exchange-public-css', 'dashicons' )
+			array( 'it-exchange-select2', 'it-exchange-public-css', 'dashicons', 'it-exchange-autocomplete-style' )
 		);
 	}
 }
