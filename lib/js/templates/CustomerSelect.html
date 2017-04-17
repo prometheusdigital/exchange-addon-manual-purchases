@@ -1,0 +1,51 @@
+<script type="text/template" id="tmpl-customer-select">
+    <details open="open">
+        <summary>{{ data.summaryLabel }}</summary>
+        <fieldset class="customer-type">
+            <label>
+                <input type="radio" class="toggle-customer" name="customerType" value="existing">
+                {{ data.existing }}
+            </label>
+            <label>
+                <input type="radio" class="toggle-customer" name="customerType" value="new">
+                {{ data.new }}
+            </label>
+        </fieldset>
+
+        <fieldset class="existing-customer">
+            <label>
+                {{ data.searchInstructions }}
+                <span class="customer-search-select-container">
+                    <select class="customer-search" name="customerID"></select>
+                    <button class="button button-secondary select-customer">{{ data.select }}</button>
+                </span>
+            </label>
+        </fieldset>
+
+        <fieldset class="new-customer">
+            <div class="fields">
+                <label>
+                    {{ data.username }}
+                    <input type="text" name="username" autocomplete="off">
+                </label>
+
+                <label>
+                    {{ data.email }}
+                    <input type="email" name="email" autocomplete="off">
+                </label>
+
+                <label>
+                    {{ data.firstName }}
+                    <input type="text" name="firstName" autocomplete="off">
+                </label>
+
+                <label>
+                    {{ data.lastName }}
+                    <input type="text" max="lastName" autocomplete="off">
+                </label>
+            </div>
+
+            <button class="button button-primary add-customer">{{ data.add }}</button>
+        </fieldset>
+    </details>
+</script>

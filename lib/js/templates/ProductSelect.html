@@ -1,0 +1,41 @@
+<script type="text/template" id="tmpl-product-select">
+
+    <details>
+        <summary>{{ data.summaryLabel }}</summary>
+
+        <label>
+            <span class="screen-reader-text">{{ data.searchInstructions }}</span>
+            <input type="search" name="productSearch" placeholder="{{ data.searchInstructions }}" autocomplete="off">
+            <span class="spinner"></span>
+        </label>
+
+        <ul class="product-search-results"></ul>
+
+        <button class="button button-primary hidden continue">{{ data.continue }}</button>
+    </details>
+</script>
+
+<script type="text/template" id="tmpl-product-option">
+    <div class="product-option--card">
+        <# if ( data.image ) { #>
+            <img src="{{ data.image }}"/>
+        <# } #>
+
+        <div class="product-option--card-details">
+            <span class="product-option--card-name">{{ data.title }}</span>
+            <span class="product-option--card-price">{{ data.priceFormatted }}</span>
+        </div>
+    </div>
+
+    <div class="product-option--triggers">
+        <div class="product-option--triggers-add">
+            <button class="button button-secondary">{{ data.add }}</button>
+        </div>
+
+        <div class="product-option--triggers-modify">
+            <button class="button button-secondary decrease-quantity">&minus;<span class="screen-reader-text">{{ data.decrease }}</span></button>
+            <button class="button button-secondary added" disabled>{{ data.added }}</button>
+            <button class="button button-secondary increase-quantity">&plus;<span class="screen-reader-text">{{ data.increase }}</span></button>
+        </div>
+    </div>
+</script>

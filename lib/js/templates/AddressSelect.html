@@ -1,0 +1,17 @@
+<script type="text/template" id="tmpl-address-select">
+    <details>
+        <summary>{{ data.summaryLabel }}</summary>
+
+        <ul class="address-options-container"></ul>
+    </details>
+</script>
+
+<script type="text/template" id="tmpl-address-option">
+    <label>
+        <input type="radio" name="{{ data.type }}Address" value="{{ data.id }}">
+        <div class="address-block">
+            <span>{{ data.lastUsedLabel }} {{ data.lastUsedFormatted }}</span>
+            <p>{{{ data.addressFormatted }}}</p>
+        </div>
+    </label>
+</script>

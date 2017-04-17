@@ -1,0 +1,22 @@
+<script type="text/template" id="tmpl-mp-cart">
+
+    <div class="cart-summary">
+        <div class="customer-container"></div>
+        <div class="address-container"></div>
+        <div class="checkout-container"></div>
+    </div>
+    <div class="cart-receipt"></div>
+</script>
+
+<script type="text/template" id="tmpl-mp-customer">
+
+    <img src="{{ data.avatar_url }}"/>
+
+    <span class="customer-name">{{ data.display_name }}</span>
+    <span class="customer-email">{{ data.email }}</span>
+</script>
+
+<script type="text/template" id="tmpl-mp-address">
+    <span class="address-type">{{ data.typeLabel }}</span>
+    <p class="address-formatted">{{{ data.addressFormatted }}}</p>
+</script>

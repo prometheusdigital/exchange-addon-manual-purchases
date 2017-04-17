@@ -1,0 +1,25 @@
+<script type="text/template" id="tmpl-shipping-method">
+
+    <details>
+        <summary>{{ data.summaryLabel }}</summary>
+        <div class="shipping-cart-wide-container"></div>
+        <div class="shipping-per-item-container"></div>
+
+        <div class="shipping-continue-container">
+            <button class="button button-primary hidden shipping-continue">{{ data.continue }}</button>
+        </div>
+    </details>
+</script>
+
+<script type="text/template" id="tmpl-cart-wide-shipping-method-option">
+    <label>
+        <input type="radio" name="cartWideShipping" value="{{ data.id }}">
+        {{ data.label }} <# if ( data.hasTotal ) { #> - {{ data.totalFormatted }} <# } #>
+    </label>
+</script>
+
+<script type="text/template" id="tmpl-per-item-shipping-method-options">
+    <label>
+        <span class="shipping-item-name">{{ data.itemName }}</span>
+    </label>
+</script>
