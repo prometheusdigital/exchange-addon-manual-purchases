@@ -184,6 +184,7 @@ function it_exchange_manual_purchases_addon_admin_wp_enqueue_scripts() {
 	it_exchange_add_inline_script( 'it-exchange-manual-purchases-app', include __DIR__ . '/js/templates/AddressSelect.html' );
 	it_exchange_add_inline_script( 'it-exchange-manual-purchases-app', include __DIR__ . '/js/templates/Purchase.html' );
 	it_exchange_add_inline_script( 'it-exchange-manual-purchases-app', include __DIR__ . '/js/templates/ShippingMethod.html' );
+	it_exchange_add_inline_script( 'it-exchange-manual-purchases-app', include __DIR__ . '/js/templates/ModifyTotals.html' );
 
 	it_exchange_preload_schemas( array(
 		'payment-token',

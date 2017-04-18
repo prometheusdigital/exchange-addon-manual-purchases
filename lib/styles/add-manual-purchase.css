@@ -238,6 +238,14 @@ label.it-exchange-address-form-field--address1 {
     font-weight: bold;
 }
 
+.coupon-container span {
+    display: block;
+}
+
+.modify-totals-view .continue-container {
+    margin: 10px 0;
+}
+
 .purchase-note {
     margin: 0 0 10px 0;
 }
