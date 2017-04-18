@@ -242,6 +242,20 @@ label.it-exchange-address-form-field--address1 {
     display: block;
 }
 
+.pre-tax-total-container span {
+    display: block;
+}
+
+.modify-totals-fields-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.modify-totals-fields-container > div {
+    margin: 10px 10px 0 0;
+}
+
 .modify-totals-view .continue-container {
     margin: 10px 0;
 }
@@ -288,6 +302,10 @@ label.it-exchange-address-form-field--address1 {
 }
 
 /** Cart Summary */
+
+.notices-container:empty {
+    display: none;
+}
 
 .cart-summary-container:empty {
     display: none;

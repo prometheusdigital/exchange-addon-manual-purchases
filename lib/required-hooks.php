@@ -154,7 +154,7 @@ function it_exchange_manual_purchases_addon_admin_wp_enqueue_scripts() {
 	wp_enqueue_script( 'it-exchange-manual-purchases-app', ITUtility::get_url_from_file( dirname( __FILE__ ) ) . '/js/app.js', array(
 		'it-exchange-rest',
 		'it-exchange-select2',
-        'jquery-select-to-autocomplete',
+		'jquery-select-to-autocomplete',
 	) );
 	wp_enqueue_style( 'it-exchange-select2' );
 	wp_enqueue_style( 'dashicons' );
@@ -233,6 +233,19 @@ function it_exchange_manual_purchases_addon_admin_wp_enqueue_scripts() {
 			'shippingMethod' => array(
 				'summaryLabel' => __( 'Shipping Method', 'LION' ),
 				'continue'     => _x( 'Continue', 'Continue to next step after selecting a shipping method.', 'LION' ),
+			),
+			'modifyTotals'   => array(
+				'summaryLabel'    => __( 'Modify Totals', 'LION' ),
+				'couponCode'      => __( 'Coupon Code', 'LION' ),
+				'add'             => _x( 'Add', 'Add a coupon to the cart.', 'LION' ),
+				'remove'          => _x( 'Remove', 'Remove the coupon from the cart.', 'LION' ),
+				'continue'        => __( 'Continue', 'LION' ),
+				'preTaxTotal'     => __( 'Pre-tax Total', 'LION' ),
+				'save'            => _x( 'Save', 'Action trigger for saving the pre-tax total.', 'LION' ),
+				'preTaxTotalDesc' => __( 'In the majority of cases, the cart total should be adjusted using coupons.', 'LION' )
+			),
+			'summary'        => array(
+				'dismiss' => __( 'Dismiss', 'LION' )
 			)
 		)
 	);
@@ -428,11 +441,11 @@ function it_exchange_manual_purchases_after_payment_details() {
 add_action( 'it_exchange_after_payment_details', 'it_exchange_manual_purchases_after_payment_details' );
 
 /**
- * Register the cart meta for saving a manual purchases note.
+ * Register the cart meta for saving a manual purchases note and altering the pre-tax total.
  *
  * @since 2.0.0
  */
-function it_exchange_register_manual_purchase_note_meta() {
+function it_exchange_manual_purchases_register_meta() {
 
 	$dm = new IT_Exchange_Deprecated_Meta( 'post' );
 	$dm->add(
@@ -441,7 +454,7 @@ function it_exchange_register_manual_purchase_note_meta() {
 		'2.0.0'
 	);
 
-	$meta = new ITE_Cart_Meta( 'manual_purchase_note', array(
+	ITE_Cart_Meta_Registry::register( new ITE_Cart_Meta( 'manual_purchase_note', array(
 		'show_in_rest'     => true,
 		'editable_in_rest' => function ( \iThemes\Exchange\REST\Auth\AuthScope $scope ) {
 			return $scope->can( 'it_make_manual_purchase' );
@@ -450,12 +463,57 @@ function it_exchange_register_manual_purchase_note_meta() {
 			'type'        => 'string',
 			'description' => __( 'Add a note to manual purchases.', 'LION' )
 		)
-	) );
+	) ) );
 
-	ITE_Cart_Meta_Registry::register( $meta );
+	ITE_Cart_Meta_Registry::register( new ITE_Cart_Meta( 'manual_purchases_pre_tax_total', array(
+		'show_in_rest'     => true,
+		'editable_in_rest' => function ( \iThemes\Exchange\REST\Auth\AuthScope $scope ) {
+			return $scope->can( 'it_make_manual_purchase' );
+		},
+		'schema'           => array(
+			'type'        => 'number',
+			'description' => __( 'Set the desired pre-tax total.', 'LION' )
+		)
+	) ) );
 }
 
-add_action( 'init', 'it_exchange_register_manual_purchase_note_meta' );
+add_action( 'init', 'it_exchange_manual_purchases_register_meta' );
+
+/**
+ * When the pre-tax total meta is set, create a fee line item to offset the cart total.
+ *
+ * @since 2.0.0
+ *
+ * @param string    $key
+ * @param float     $pre_tax_total
+ * @param \ITE_Cart $cart
+ */
+function it_exchange_manual_purchases_max_pre_tax_total_fee( $key, $pre_tax_total, $cart ) {
+
+	if ( $key !== 'manual_purchases_pre_tax_total' ) {
+		return;
+	}
+
+	$mp_name = 'mp_pre_tax_total_adjustment';
+
+	$subtotal   = $cart->get_items()->non_summary_only()->not_having_param( $mp_name )->total();
+	$adjustment = $pre_tax_total - $subtotal;
+
+	$fee = $cart->get_items( 'fee' )->having_param( $mp_name )->first();
+
+	if ( $fee ) {
+		$fee->set_param( 'amount', $adjustment );
+		$cart->save_item( $fee );
+	} else {
+		$fee = ITE_Fee_Line_Item::create( __( 'Manual Purchases Adjustment', 'LION' ), $adjustment );
+		$fee->set_param( $mp_name, true );
+		$cart->add_item( $fee );
+	}
+
+	$cart->prepare_for_purchase();
+}
+
+add_action( 'it_exchange_set_cart_meta', 'it_exchange_manual_purchases_max_pre_tax_total_fee', 10, 3 );
 
 /**
  * Override the capability to show the Add New payment button.

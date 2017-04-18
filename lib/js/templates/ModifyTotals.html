@@ -1,19 +1,31 @@
 <script type="text/template" id="tmpl-modify-totals">
 
     <details>
-        <summary>Modify Totals</summary>
-        <div class="coupon-container">
-            <label>
-                <span>Coupon Code</span>
-                <input type="text" name="couponCode">
-            </label>
+        <summary>{{ data.summaryLabel }}</summary>
 
-            <button class="button add-coupon">Add</button>
-            <button class="button remove-coupon hidden">Remove</button>
+        <div class="modify-totals-fields-container">
+            <div class="coupon-container">
+                <label>
+                    <span>{{ data.couponCode }}</span>
+                    <input type="text" name="couponCode">
+                </label>
+
+                <button class="button add-coupon">{{ data.add }}</button>
+                <button class="button remove-coupon hidden">{{ data.remove }}</button>
+            </div>
+
+            <div class="pre-tax-total-container">
+                <label>
+                    <span>{{ data.preTaxTotal }}</span>
+                    <input type="text" name="preTaxTotal">
+                </label>
+                <button class="button save-pre-tax-total">{{ data.save }}</button>
+                <p class="description">{{ data.preTaxTotalDesc }}</p>
+            </div>
         </div>
 
         <div class="continue-container">
-            <button class="button button-primary continue">Continue</button>
+            <button class="button button-primary continue">{{ data.continue }}</button>
         </div>
     </details>
 </script>
