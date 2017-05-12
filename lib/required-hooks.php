@@ -220,10 +220,11 @@ function it_exchange_manual_purchases_addon_admin_wp_enqueue_scripts() {
 				'decrease'           => __( 'Decrease Quantity', 'LION' ),
 			),
 			'addressSelect'  => array(
-				'lastUsed' => __( 'Last Used:', 'LION' ),
-				'billing'  => __( 'Billing Address', 'LION' ),
-				'shipping' => __( 'Shipping Address', 'LION' ),
-				'never'    => _x( 'Never', 'Address that was never used.', 'LION' ),
+				'lastUsed'      => __( 'Last Used:', 'LION' ),
+				'billing'       => __( 'Billing Address', 'LION' ),
+				'shipping'      => __( 'Shipping Address', 'LION' ),
+				'never'         => _x( 'Never', 'Address that was never used.', 'LION' ),
+				'addNewAddress' => __( 'Add New Address', 'LION' ),
 			),
 			'purchase'       => array(
 				'summaryLabel' => __( 'Payment', 'LION' ),
@@ -307,15 +308,13 @@ function it_exchange_manual_purchases_redirect_core_add_edit_screens() {
 	$pagenow   = empty( $GLOBALS['pagenow'] ) ? false : $GLOBALS['pagenow'];
 	$post_type = empty( $_GET['post_type'] ) ? false : $_GET['post_type'];
 
-	if ( 'post-new.php' !== $pagenow ) {
+	if ( 'post-new.php' !== $pagenow || 'it_exchange_tran' !== $post_type  ) {
 		return;
 	}
 
 	// Redirect for add new screen
-	if ( 'post-new.php' === $pagenow && 'it_exchange_tran' === $post_type ) {
-		wp_safe_redirect( esc_url_raw( add_query_arg( array( 'page' => 'it-exchange-add-manual-purchase' ), get_admin_url() . 'admin.php' ) ) );
-		die();
-	}
+    wp_safe_redirect( esc_url_raw( add_query_arg( array( 'page' => 'it-exchange-add-manual-purchase' ), get_admin_url() . 'admin.php' ) ) );
+    die();
 }
 
 add_action( 'admin_init', 'it_exchange_manual_purchases_redirect_core_add_edit_screens' );
@@ -387,30 +386,10 @@ add_action( 'admin_head', 'it_exchange_manual_purchases_remove_submenu_links' );
  * @return boolean
  */
 function it_exchange_manual_purchases_transaction_is_cleared_for_delivery( $cleared, $transaction ) {
-	return it_exchange_get_default_transaction_status( $transaction ) === 'Completed';
+	return it_exchange_get_transaction_status( $transaction ) === 'Completed';
 }
 
 add_filter( 'it_exchange_manual-purchases_transaction_is_cleared_for_delivery', 'it_exchange_manual_purchases_transaction_is_cleared_for_delivery', 10, 2 );
-
-/**
- * Process Manual Purchase Requests
- *
- * @since 1.0.0
- *
- * @return void
- */
-function it_exchange_manual_purchases_request() {
-	if ( empty( $_POST['it-exchange-manual-purchase-add-payment-nonce'] ) ) {
-		return;
-	}
-
-	if ( ! empty( $_POST['cancel'] ) ) {
-		wp_safe_redirect( esc_url_raw( add_query_arg( array( 'post_type' => 'it_exchange_tran' ), 'edit.php' ) ) );
-		die();
-	}
-}
-
-add_action( 'admin_init', 'it_exchange_manual_purchases_request' );
 
 /**
  * Display purchase notes for manual purchases
@@ -527,3 +506,14 @@ function it_exchange_manual_purchases_tran_create_posts_capabilities() {
 }
 
 add_filter( 'it_exchange_tran_create_posts_capabilities', 'it_exchange_manual_purchases_tran_create_posts_capabilities' );
+
+/**
+ * Process Manual Purchase Requests
+ *
+ * @since 1.0.0
+ *
+ * @return void
+ */
+function it_exchange_manual_purchases_request() {
+	_deprecated_function( __FUNCTION__, '2.0.0' );
+}

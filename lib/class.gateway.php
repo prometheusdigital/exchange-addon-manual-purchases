@@ -68,13 +68,6 @@ class ITE_Manual_Purchases_Gateway extends ITE_Gateway {
 	/**
 	 * @inheritDoc
 	 */
-	public function get_payment_button_label() {
-		return __( 'Manual Purchase', 'LION' );
-	}
-
-	/**
-	 * @inheritDoc
-	 */
 	public function is_sandbox_mode() { return false; }
 
 	/**
@@ -91,47 +84,4 @@ class ITE_Manual_Purchases_Gateway extends ITE_Gateway {
 	 * @inheritDoc
 	 */
 	public function get_settings_name() { return ''; }
-
-	/**
-	 * @inheritDoc
-	 */
-	public function supports_feature( ITE_Optionally_Supported_Feature $feature ) {
-
-		switch ( $feature->get_feature_slug() ) {
-			case 'recurring-payments':
-			case 'one-time-fee':
-				return true;
-		}
-
-		return parent::supports_feature( $feature );
-	}
-
-	/**
-	 * @inheritDoc
-	 */
-	public function supports_feature_and_detail( ITE_Optionally_Supported_Feature $feature, $slug, $detail ) {
-
-		switch ( $feature->get_feature_slug() ) {
-			case 'one-time-fee':
-				switch ( $slug ) {
-					case 'discount':
-						return true;
-					default:
-						return false;
-				}
-			case 'recurring-payments':
-				switch ( $slug ) {
-					case 'auto-renew':
-					case 'profile':
-					case 'trial':
-					case 'trial-profile':
-					case 'max-occurrences':
-						return true;
-					default:
-						return false;
-				}
-		}
-
-		return parent::supports_feature( $feature );
-	}
 }
