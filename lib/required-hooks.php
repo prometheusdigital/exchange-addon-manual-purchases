@@ -193,7 +193,7 @@ function it_exchange_manual_purchases_addon_admin_wp_enqueue_scripts() {
 		'cart-item-product',
 		'cart-item-coupon',
 		'cart-purchase',
-		'address',
+		'customer-address',
 	) );
 
 	$localize = array(
@@ -225,6 +225,7 @@ function it_exchange_manual_purchases_addon_admin_wp_enqueue_scripts() {
 				'shipping'      => __( 'Shipping Address', 'LION' ),
 				'never'         => _x( 'Never', 'Address that was never used.', 'LION' ),
 				'addNewAddress' => __( 'Add New Address', 'LION' ),
+				'continue'      => __( 'Continue', 'LION' ),
 			),
 			'purchase'       => array(
 				'summaryLabel' => __( 'Payment', 'LION' ),
