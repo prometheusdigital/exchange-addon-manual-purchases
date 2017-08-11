@@ -141,7 +141,7 @@ function exchange_manual_purchases_license_activate() {
 
 			// Check if anything passed on a message constituting a failure
 			if ( ! empty( $message ) ) {
-				$base_url = admin_url( 'admin.php?page=' . 'manual_purchases' );
+				$base_url = admin_url( 'admin.php?page=' . 'manual-purchases' );
 				$redirect = add_query_arg( array( 'sl_activation' => 'false', 'message' => urlencode( $message ) ), $base_url );
 
 				wp_redirect( $redirect );
@@ -150,7 +150,7 @@ function exchange_manual_purchases_license_activate() {
 
 			//$license_data->license will be either "valid" or "invalid"
 			update_option( 'exchange_manual_purchases_license_status', $license_data->license );
-			wp_redirect( admin_url( 'admin.php?page=it-exchange-addons&add-on-settings=manual_purchases' ) );
+			wp_redirect( admin_url( 'admin.php?page=it-exchange-addons&add-on-settings=manual-purchases' ) );
 			exit();
 		}
 
@@ -198,7 +198,7 @@ function exchange_manual_purchases_license_deactivate() {
 				// $base_url = admin_url( 'admin.php?page=' . 'manual_purchases-license' );
 				// $redirect = add_query_arg( array( 'sl_activation' => 'false', 'message' => urlencode( $message ) ), $base_url );
 
-				wp_redirect( 'admin.php?page=it-exchange-addons&add-on-settings=manual_purchases' );
+				wp_redirect( 'admin.php?page=it-exchange-addons&add-on-settings=manual-purchases' );
 				exit();
 			}
 
@@ -209,7 +209,7 @@ function exchange_manual_purchases_license_deactivate() {
 				delete_option( 'exchange_manual_purchases_license_status' );
 			}
 
-			wp_redirect( admin_url( 'admin.php?page=it-exchange-addons&add-on-settings=manual_purchases' ) );
+			wp_redirect( admin_url( 'admin.php?page=it-exchange-addons&add-on-settings=manual-purchases' ) );
 			exit();
 
 		}
