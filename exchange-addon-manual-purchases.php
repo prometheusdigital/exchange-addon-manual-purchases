@@ -1,7 +1,7 @@
 <?php
 /*
  * Plugin Name: ExchangeWP - Manual Purchases Add-on
- * Version: 0.0.1
+ * Version: 1.3.5
  * Description: Adds manual purchases functionality to ExchangeWP
  * Plugin URI: https://exchangewp.com/downloads/manual-purchases/
  * Author: ExchangeWP
@@ -73,6 +73,11 @@ function it_exchange_add_manual_purchases_nag() {
     <?php
 }
 
+function it_exchange_manual_purchases_tran_create_posts_capabilities( $cap ) {
+	return 'edit_posts';
+}
+add_filter( 'it_exchange_tran_create_posts_capabilities', 'it_exchange_manual_purchases_tran_create_posts_capabilities' );
+
 /**
  * Loads the translation data for WordPress
  *
@@ -93,18 +98,6 @@ add_action( 'plugins_loaded', 'it_exchange_manual_purchases_set_textdomain' );
  * @param object $updater ithemes updater object
  * @return void
 */
-function ithemes_exchange_addon_it_exchange_manual_purchases_set_textdomain_updater_register( $updater ) {
-	    $updater->register( 'exchange-addon-manual-purchases', __FILE__ );
-}
-add_action( 'ithemes_updater_register', 'ithemes_exchange_addon_it_exchange_manual_purchases_set_textdomain_updater_register' );
-// require( dirname( __FILE__ ) . '/lib/updater/load.php' );
-
-
-function it_exchange_manual_purchases_tran_create_posts_capabilities( $cap ) {
-	return 'edit_posts';
-}
-add_filter( 'it_exchange_tran_create_posts_capabilities', 'it_exchange_manual_purchases_tran_create_posts_capabilities' );
-
 function exchange_manual_purchases_plugin_updater() {
 
 	$license_check = get_transient( 'exchangewp_license_check' );
@@ -114,9 +107,9 @@ function exchange_manual_purchases_plugin_updater() {
 		$license = $license_key['exchange_license'];
 
 		$edd_updater = new EDD_SL_Plugin_Updater( 'https://exchangewp.com', __FILE__, array(
-				'version' 		=> '0.0.1', 				// current version number
-				'license' 		=> $license, 		// license key (used get_option above to retrieve from DB)
-				'item_name' 	=> urlencode('Manual Purchases'), 	  // name of this plugin
+				'version' 		=> '1.3.5', 				// current version number
+				'license' 		=> $license, 				// license key (used get_option above to retrieve from DB)
+				'item_id'		 	=> 435,					 	  // name of this plugin
 				'author' 	  	=> 'ExchangeWP',    // author of this plugin
 				'url'       	=> home_url(),
 				'wp_override' => true,
